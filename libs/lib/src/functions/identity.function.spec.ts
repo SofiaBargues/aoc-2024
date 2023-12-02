@@ -1,0 +1,1 @@
+/home/alex/git/@aa/advent-of-code/.prettierrc.js

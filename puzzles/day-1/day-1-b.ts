@@ -1,5 +1,5 @@
-import { readData } from '../../shared.ts';
 import chalk from 'chalk';
+import { readData } from '../../shared.ts';
 
 function isNumeric(str: string) {
   if (typeof str != "string") return false // we only process strings!  

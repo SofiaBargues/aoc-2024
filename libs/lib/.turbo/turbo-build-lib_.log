@@ -1,0 +1,85 @@
+
+> @alexaegis/advent-of-code-lib@1.0.0 build-lib_ /home/sofi/code/advent-of-code/solutions/typescript/libs/lib
+> vite build
+
+[34m[1mINFO[22m[39m[0m[0m:[1m[37m	pakk:directive[39m[22m[0m[0m	enabled directives:
+[34m[1mINFO[22m[39m[0m[0m:[1m[37m	pakk:directive[39m[22m[0m[0m	pakk:not-distributed
+[34m[1mINFO[22m[39m[0m[0m:[1m[37m	pakk[39m[22m[0m[0m	examining workspace package at /home/sofi/code/advent-of-code/solutions/typescript/libs/lib/package.json
+[34m[1mINFO[22m[39m[0m[0m:[1m[37m	pakk:export[39m[22m[0m[0m	detected package exports [
+  [32m'array.ts'[39m,
+  [32m'assert.ts'[39m,
+  [32m'benchmark.ts'[39m,
+  [32m'functions.ts'[39m,
+  [32m'index.ts'[39m,
+  [32m'intcode.ts'[39m,
+  [32m'linked-list.ts'[39m,
+  [32m'logic.ts'[39m,
+  [32m'map.ts'[39m,
+  [32m'math.ts'[39m,
+  [32m'model.ts'[39m,
+  [32m'platform.ts'[39m,
+  [32m'polyfills.ts'[39m,
+  [32m'regex.ts'[39m,
+  [32m'set.ts'[39m,
+  [32m'string.ts'[39m
+]
+[34m[1mINFO[22m[39m[0m[0m:[1m[37m	pakk[39m[22m[0m[0m	preparation phase took 510ms to finish
+vite v5.0.4 building for production...
+transforming...
+"add" is imported from external module "benny" but never used in "src/benchmark/benny.utils.ts".
+✓ 177 modules transformed.
+Generated an empty chunk: "logic".
+rendering chunks...
+computing gzip size...
+dist/logic.js                                0.00 kB │ gzip:  0.02 kB
+dist/assert.js                               0.17 kB │ gzip:  0.12 kB
+dist/round-to-decimal.function-Cwzke1xf.js   0.19 kB │ gzip:  0.15 kB
+dist/regex.js                                0.24 kB │ gzip:  0.13 kB
+dist/frequency-map.function-8lKbf4vK.js      0.25 kB │ gzip:  0.17 kB
+dist/polyfills.js                            0.27 kB │ gzip:  0.14 kB
+dist/num-at.function-BVY5WvIL.js             0.45 kB │ gzip:  0.22 kB
+dist/set.js                                  0.48 kB │ gzip:  0.25 kB
+dist/benchmark.js                            0.68 kB │ gzip:  0.36 kB
+dist/string.js                               0.70 kB │ gzip:  0.38 kB
+dist/array.js                                1.05 kB │ gzip:  0.54 kB
+dist/map.js                                  1.21 kB │ gzip:  0.42 kB
+dist/platform.js                             2.98 kB │ gzip:  1.22 kB
+dist/linked-list.js                          4.47 kB │ gzip:  1.00 kB
+dist/intcode.js                              6.66 kB │ gzip:  1.77 kB
+dist/index.js                                7.27 kB │ gzip:  2.26 kB
+dist/model.js                                9.77 kB │ gzip:  2.12 kB
+dist/math.js                                10.39 kB │ gzip:  3.36 kB
+dist/functions.js                           15.37 kB │ gzip:  3.99 kB
+dist/polyfills-4_OaMxjV.js                  88.78 kB │ gzip: 19.33 kB
+Generated an empty chunk: "logic".
+dist/logic.cjs                                0.01 kB │ gzip:  0.03 kB
+dist/round-to-decimal.function-O5Uesn7H.cjs   0.21 kB │ gzip:  0.16 kB
+dist/frequency-map.function-Yy-m-ein.cjs      0.27 kB │ gzip:  0.18 kB
+dist/assert.cjs                               0.30 kB │ gzip:  0.19 kB
+dist/polyfills.cjs                            0.31 kB │ gzip:  0.15 kB
+dist/regex.cjs                                0.42 kB │ gzip:  0.22 kB
+dist/num-at.function-OaAhB_C1.cjs             0.51 kB │ gzip:  0.24 kB
+dist/set.cjs                                  0.58 kB │ gzip:  0.32 kB
+dist/benchmark.cjs                            0.78 kB │ gzip:  0.40 kB
+dist/string.cjs                               1.03 kB │ gzip:  0.44 kB
+dist/map.cjs                                  1.31 kB │ gzip:  0.48 kB
+dist/array.cjs                                1.61 kB │ gzip:  0.61 kB
+dist/platform.cjs                             3.37 kB │ gzip:  1.30 kB
+dist/linked-list.cjs                          4.62 kB │ gzip:  1.07 kB
+dist/intcode.cjs                              6.89 kB │ gzip:  1.83 kB
+dist/model.cjs                               11.26 kB │ gzip:  2.15 kB
+dist/math.cjs                                11.51 kB │ gzip:  3.42 kB
+dist/index.cjs                               11.86 kB │ gzip:  2.29 kB
+dist/functions.cjs                           17.68 kB │ gzip:  4.24 kB
+dist/polyfills-dX7Mqlge.cjs                  90.83 kB │ gzip: 19.41 kB
+[34m[1mINFO[22m[39m[0m[0m:[1m[37m	pakk[39m[22m[0m[0m	processing workspace package at /home/sofi/code/advent-of-code/solutions/typescript/libs/lib/package.json
+[34m[1mINFO[22m[39m[0m[0m:[1m[37m	pakk:export-static[39m[22m[0m[0m	copy all static files []
+✓ built in 2.06s
+[34m[1mINFO[22m[39m[0m[0m:[1m[37m	pakk:bin[39m[22m[0m[0m	Creating shims for bins in es/module format
+[34m[1mINFO[22m[39m[0m[0m:[1m[37m	pakk:copy-license[39m[22m[0m[0m	Copied license file from /home/sofi/code/advent-of-code/license
+[34m[1mINFO[22m[39m[0m[0m:[1m[37m	pakk:metadata[39m[22m[0m[0m	filling metadata for distributed packageJson
+[34m[1mINFO[22m[39m[0m[0m:[1m[37m	pakk:sort[39m[22m[0m[0m	sorting packageJson...
+[34m[1mINFO[22m[39m[0m[0m:[1m[37m	pakk[39m[22m[0m[0m	writing updated package.json to /home/sofi/code/advent-of-code/solutions/typescript/libs/lib/dist/package.json
+[34m[1mINFO[22m[39m[0m[0m:[1m[37m	pakk:sort[39m[22m[0m[0m	sorting packageJson...
+[34m[1mINFO[22m[39m[0m[0m:[1m[37m	pakk[39m[22m[0m[0m	writing updated package.json to /home/sofi/code/advent-of-code/solutions/typescript/libs/lib/package.json
+[34m[1mINFO[22m[39m[0m[0m:[1m[37m	pakk[39m[22m[0m[0m	update phase took ~1048ms to finish

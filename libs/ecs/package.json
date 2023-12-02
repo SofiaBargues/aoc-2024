@@ -1,0 +1,86 @@
+{
+	"name": "@alexaegis/ecs",
+	"description": "A basic ECS library",
+	"version": "1.0.0",
+	"private": false,
+	"archetype": {
+		"platform": "node",
+		"framework": "adventofcode",
+		"language": "ts",
+		"kind": "lib"
+	},
+	"keywords": [
+		"@alexaegis/setup-depcheck",
+		"@alexaegis/setup-eslint",
+		"@alexaegis/setup-prettier",
+		"@alexaegis/setup-remark",
+		"@alexaegis/setup-ts-node",
+		"@alexaegis/setup-vite-lib",
+		"@alexaegis/setup-vitest-node",
+		"advent-of-code",
+		"javascript",
+		"js",
+		"ts",
+		"typescript"
+	],
+	"type": "module",
+	"scripts": {
+		"lint:depcheck": "turbo run lint:depcheck_ --concurrency 6 --cache-dir .cache/turbo --filter @alexaegis/ecs",
+		"lint:depcheck_": "depcheck",
+		"lint:es": "turbo run lint:es_ --concurrency 6 --cache-dir .cache/turbo --filter @alexaegis/ecs",
+		"lint:es_": "eslint --max-warnings=0 --fix --no-error-on-unmatched-pattern .",
+		"lint:format": "turbo run lint:format_ --concurrency 6 --cache-dir .cache/turbo --filter @alexaegis/ecs",
+		"lint:format_": "prettier --check .",
+		"lint:md": "turbo run lint:md_ --concurrency 6 --cache-dir .cache/turbo --filter @alexaegis/ecs",
+		"lint:md_": "remark --frail --no-stdout --silently-ignore *.md docs/**/*.md",
+		"lint:rmd": "remark --frail --quiet --no-stdout *.md",
+		"lint:tsc": "turbo run lint:tsc_ --concurrency 6 --cache-dir .cache/turbo --filter @alexaegis/ecs",
+		"lint:tsc_": "tsc --noEmit",
+		"test": "turbo run test_ --concurrency 6 --cache-dir .cache/turbo --filter @alexaegis/ecs",
+		"test_": "vitest --passWithNoTests --coverage --run",
+		"test:watch": "vitest --passWithNoTests --coverage",
+		"bench:open": "live-server benchmark/results/reduce.chart.html --port=8989",
+		"build": "turbo run build-lib_ --concurrency 6 --cache-dir .cache/turbo --filter @alexaegis/ecs",
+		"build-lib_": "vite build",
+		"codecov": "codecov",
+		"dev": "RUN=1 NODE_NO_WARNINGS=1 nodemon --no-stdin src/examples/example.ts",
+		"example": "RUN=1 NODE_NO_WARNINGS=1 ts-node-esm src/examples/example.ts",
+		"format": "prettier --write ."
+	},
+	"exports": {
+		".": {
+			"types": "./src/index.ts",
+			"import": "./dist/index.js",
+			"require": "./dist/index.cjs",
+			"default": "./dist/index.js"
+		},
+		"./readme": "./readme.md"
+	},
+	"dependencies": {
+		"@alexaegis/advent-of-code-lib": "^1.0.0",
+		"@alexaegis/common": "^0.8.0",
+		"blessed": "^0.1.81",
+		"rxjs": "^7.8.1",
+		"terminal-kit": "^3.0.1"
+	},
+	"devDependencies": {
+		"@alexaegis/eslint-config-vitest": "^0.9.1",
+		"@alexaegis/ts": "^0.9.1",
+		"@alexaegis/vite": "^0.9.1",
+		"@alexaegis/vitest": "^0.9.1",
+		"@types/blessed": "^0.1.25",
+		"@types/node": "^20.10.1",
+		"@types/terminal-kit": "^2.5.6",
+		"@typescript-eslint/eslint-plugin": "^6.13.1",
+		"@typescript-eslint/parser": "^6.13.1",
+		"eslint": "^8.54.0",
+		"eslint-config-prettier": "^9.0.0",
+		"eslint-plugin-prettier": "^5.0.1",
+		"nodemon": "^3.0.1",
+		"prettier": "^3.1.0",
+		"ts-node": "10.9.1",
+		"typescript": "5.3.2",
+		"vite": "^5.0.4",
+		"vitest": "^0.34.6"
+	}
+}

@@ -1,0 +1,170 @@
+{
+	"name": "@alexaegis/advent-of-code-lib",
+	"description": "Advent of Code Library",
+	"version": "1.0.0",
+	"private": false,
+	"archetype": {
+		"platform": "node",
+		"framework": "adventofcode",
+		"language": "ts",
+		"kind": "lib"
+	},
+	"keywords": [
+		"@alexaegis/setup-depcheck",
+		"@alexaegis/setup-eslint",
+		"@alexaegis/setup-prettier",
+		"@alexaegis/setup-remark",
+		"@alexaegis/setup-ts-node",
+		"@alexaegis/setup-vite-lib",
+		"@alexaegis/setup-vitest-node",
+		"advent-of-code",
+		"javascript",
+		"js",
+		"ts",
+		"typescript"
+	],
+	"type": "module",
+	"scripts": {
+		"lint:depcheck": "turbo run lint:depcheck_ --concurrency 6 --cache-dir .cache/turbo --filter @alexaegis/advent-of-code-lib",
+		"lint:depcheck_": "depcheck",
+		"lint:es": "turbo run lint:es_ --concurrency 6 --cache-dir .cache/turbo --filter @alexaegis/advent-of-code-lib",
+		"lint:es_": "eslint --max-warnings=0 --fix --no-error-on-unmatched-pattern .",
+		"lint:format": "turbo run lint:format_ --concurrency 6 --cache-dir .cache/turbo --filter @alexaegis/advent-of-code-lib",
+		"lint:format_": "prettier --check .",
+		"lint:md": "turbo run lint:md_ --concurrency 6 --cache-dir .cache/turbo --filter @alexaegis/advent-of-code-lib",
+		"lint:md_": "remark --frail --no-stdout --silently-ignore *.md docs/**/*.md",
+		"lint:rmd": "remark --frail --quiet --no-stdout *.md",
+		"lint:tsc": "turbo run lint:tsc_ --concurrency 6 --cache-dir .cache/turbo --filter @alexaegis/advent-of-code-lib",
+		"lint:tsc_": "tsc --noEmit",
+		"test": "turbo run test_ --concurrency 6 --cache-dir .cache/turbo --filter @alexaegis/advent-of-code-lib",
+		"test_": "vitest --passWithNoTests --coverage --run",
+		"test:watch": "vitest --passWithNoTests --coverage",
+		"bench:open": "live-server benchmark/results/reduce.chart.html --port=8989",
+		"build": "turbo run build-lib_ --concurrency 6 --cache-dir .cache/turbo --filter @alexaegis/advent-of-code-lib",
+		"build-lib_": "vite build",
+		"codecov": "codecov",
+		"format": "prettier --write ."
+	},
+	"exports": {
+		".": {
+			"types": "./src/index.ts",
+			"import": "./dist/index.js",
+			"require": "./dist/index.cjs",
+			"default": "./dist/index.js"
+		},
+		"./array": {
+			"types": "./src/array.ts",
+			"import": "./dist/array.js",
+			"require": "./dist/array.cjs",
+			"default": "./dist/array.js"
+		},
+		"./assert": {
+			"types": "./src/assert.ts",
+			"import": "./dist/assert.js",
+			"require": "./dist/assert.cjs",
+			"default": "./dist/assert.js"
+		},
+		"./benchmark": {
+			"types": "./src/benchmark.ts",
+			"import": "./dist/benchmark.js",
+			"require": "./dist/benchmark.cjs",
+			"default": "./dist/benchmark.js"
+		},
+		"./functions": {
+			"types": "./src/functions.ts",
+			"import": "./dist/functions.js",
+			"require": "./dist/functions.cjs",
+			"default": "./dist/functions.js"
+		},
+		"./intcode": {
+			"types": "./src/intcode.ts",
+			"import": "./dist/intcode.js",
+			"require": "./dist/intcode.cjs",
+			"default": "./dist/intcode.js"
+		},
+		"./linked-list": {
+			"types": "./src/linked-list.ts",
+			"import": "./dist/linked-list.js",
+			"require": "./dist/linked-list.cjs",
+			"default": "./dist/linked-list.js"
+		},
+		"./logic": {
+			"types": "./src/logic.ts",
+			"import": "./dist/logic.js",
+			"require": "./dist/logic.cjs",
+			"default": "./dist/logic.js"
+		},
+		"./map": {
+			"types": "./src/map.ts",
+			"import": "./dist/map.js",
+			"require": "./dist/map.cjs",
+			"default": "./dist/map.js"
+		},
+		"./math": {
+			"types": "./src/math.ts",
+			"import": "./dist/math.js",
+			"require": "./dist/math.cjs",
+			"default": "./dist/math.js"
+		},
+		"./model": {
+			"types": "./src/model.ts",
+			"import": "./dist/model.js",
+			"require": "./dist/model.cjs",
+			"default": "./dist/model.js"
+		},
+		"./platform": {
+			"types": "./src/platform.ts",
+			"import": "./dist/platform.js",
+			"require": "./dist/platform.cjs",
+			"default": "./dist/platform.js"
+		},
+		"./polyfills": {
+			"types": "./src/polyfills.ts",
+			"import": "./dist/polyfills.js",
+			"require": "./dist/polyfills.cjs",
+			"default": "./dist/polyfills.js"
+		},
+		"./regex": {
+			"types": "./src/regex.ts",
+			"import": "./dist/regex.js",
+			"require": "./dist/regex.cjs",
+			"default": "./dist/regex.js"
+		},
+		"./set": {
+			"types": "./src/set.ts",
+			"import": "./dist/set.js",
+			"require": "./dist/set.cjs",
+			"default": "./dist/set.js"
+		},
+		"./string": {
+			"types": "./src/string.ts",
+			"import": "./dist/string.js",
+			"require": "./dist/string.cjs",
+			"default": "./dist/string.js"
+		}
+	},
+	"dependencies": {
+		"@alexaegis/common": "^0.8.0",
+		"arktype": "^1.0.28-alpha"
+	},
+	"devDependencies": {
+		"@alexaegis/eslint-config-vitest": "^0.9.1",
+		"@alexaegis/ts": "^0.9.1",
+		"@alexaegis/vite": "^0.9.1",
+		"@alexaegis/vitest": "^0.9.1",
+		"@types/node": "^20.10.1",
+		"@typescript-eslint/eslint-plugin": "^6.13.1",
+		"@typescript-eslint/parser": "^6.13.1",
+		"benny": "^3.7.1",
+		"eslint": "^8.54.0",
+		"eslint-config-prettier": "^9.0.0",
+		"eslint-plugin-prettier": "^5.0.1",
+		"kolorist": "^1.8.0",
+		"prettier": "^3.1.0",
+		"remark": "^15.0.1",
+		"remark-cli": "^12.0.0",
+		"typescript": "5.3.2",
+		"vite": "^5.0.4",
+		"vitest": "^0.34.6"
+	}
+}
