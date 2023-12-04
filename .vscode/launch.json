@@ -1,0 +1,16 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug myservice",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "/home/sofi/.nvm/versions/node/v18.16.0/bin/nx",
+      "runtimeArgs": ["serve", "myservice", "--inspect", "--data=sample "],
+      "skipFiles": ["<node_internals>/**", "${workspaceFolder}/node_modules/*"],
+      "outFiles": ["${workspaceFolder}/dist/**/*.js"]
+    }
+    // repeat for each debuggable app
+  ]
+}
