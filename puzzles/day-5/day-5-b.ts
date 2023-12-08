@@ -48,7 +48,7 @@ export async function day5b(dataPath?: string) {
     };
   }
 
-  const results = generateNumbersFromRanges(seedRanges);
+  // const results = generateNumbersFromRanges(seedRanges);
 
   const transformations = [
     'seed-to-soil',
@@ -60,13 +60,28 @@ export async function day5b(dataPath?: string) {
     'humidity-to-location',
   ];
 
-  for (const mapName of transformations) {
-    for (let i = 0; i < results.length; i++) {
-      results[i] = findNextNumber(results[i], maps[mapName]);
+  let minLocation = Infinity;
+  let numbersCount = seedRanges.reduce(
+    (acc, range) => (acc += range.length),
+    0
+  );
+  console.log(numbersCount);
+  for (let range of seedRanges) {
+    const rangeEnd = range.start + range.length - 1;
+    console.log({ range });
+
+    for (let i = range.start; i <= rangeEnd; i++) {
+      let currentPosition = i;
+      for (const mapName of transformations) {
+        currentPosition = findNextNumber(currentPosition, maps[mapName]);
+      }
+      if (currentPosition < minLocation) {
+        minLocation = currentPosition;
+      }
     }
   }
 
-  return Math.min(...results);
+  return minLocation;
 }
 
 const answer = await day5b();
