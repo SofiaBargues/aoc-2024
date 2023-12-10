@@ -1,26 +1,24 @@
-export type Race = {
-  time: number;
-  distance: number;
+export type Node = {
+  L: string;
+  R: string;
 };
 
-export const parseLines = (input: string[]): Race[] => {
+type DesertMap = Record<string, Node>;
+
+export const parseLines = (input: string[]): DesertMap => {
   input = input.filter((line) => !!line);
-  const times = input[0]
-    .split(':')[1]
-    .trim()
-    .split(/\s+/)
-    .map((time) => parseInt(time, 10));
-  const distances = input[1]
-    .split(':')[1]
-    .trim()
-    .split(/\s+/)
-    .map((time) => parseInt(time, 10));
-  return times.map<Race>((time, i) => {
-    return {
-      time,
-      distance: distances[i],
+  const desertMap: DesertMap = {};
+  input.forEach((line, i) => {
+    const name = line.split(' = ')[0];
+    const [left, right] = line
+      .split(' = ')[1]
+      .replace('(', '')
+      .replace(')', '')
+      .split(', ');
+    desertMap[name] = {
+      L: left,
+      R: right,
     };
   });
-  // .filter((c) => /^(\+|-)?[0-9]+$/.test(c))
-  // .map((a) => parseInt(a, 10));
+  return desertMap;
 };
