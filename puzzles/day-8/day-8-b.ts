@@ -11,20 +11,19 @@ export async function day8b(dataPath?: string) {
   let currentCords = Object.keys(desertMap).filter((cord) =>
     cord.endsWith('A')
   );
-  const startCoords = [...currentCords];
-  while (!currentCords.every((cord) => cord.endsWith('Z'))) {
+  const firstZEncounter = Array(currentCords.length).fill(null);
+  while (!firstZEncounter.every((cord) => cord != null)) {
     const direction = directions[step % directions.length];
     currentCords = currentCords.map((cord) => desertMap[cord][direction]);
-    currentCords.forEach((cord, i) => {
-      cord == startCoords[i] && console.log(cord);
-    });
     step++;
-
-    if (step % 1000000 == 0) {
-      console.log({ currentCords, step });
-    }
+    currentCords.forEach((cord, i) => {
+      if (cord.endsWith('Z') && firstZEncounter[i] == null) {
+        firstZEncounter[i] = step;
+      }
+    });
   }
-  return step;
+
+  return firstZEncounter;
 }
 
 const answer = await day8b();
