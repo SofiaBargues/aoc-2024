@@ -1,5 +1,3 @@
-export const parseLines = (
-  input: string[]
-): { blue: number; green: number; red: number }[][] => {
-  return input.filter((line) => !!line);
+export const parseLines = (input: string[]) => {
+  return input;
 };
