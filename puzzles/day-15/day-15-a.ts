@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { readData } from '../../shared.ts';
+import { readLines } from '../../shared.ts';
 
 function hash(string: string): number {
   return string.split('').reduce((acc, char) => {
@@ -11,7 +11,7 @@ function hash(string: string): number {
 }
 
 export async function day15a(dataPath?: string) {
-  const data = await readData(dataPath);
+  const data = await readLines(dataPath);
   const codes = data[0].split(',');
   const codeValues = codes.map((code) => hash(code));
   return codeValues.reduce((acc, val) => acc + val, 0);

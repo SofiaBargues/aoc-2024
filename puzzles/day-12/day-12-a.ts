@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { readData } from '../../shared.ts';
+import { readLines } from '../../shared.ts';
 import { Conditions, Groups, parseLines } from './parse.ts';
 
 function getAllPlacements(conditions: Conditions, groupLength: number) {
@@ -66,7 +66,7 @@ function getArrangementCounts(conditions: Conditions, groups: Groups): number {
 }
 
 export async function day12a(dataPath?: string) {
-  const data = await readData(dataPath);
+  const data = await readLines(dataPath);
   let springRecords = parseLines(data);
   // console.log(orderData);
   const springRecordsArrangements = springRecords

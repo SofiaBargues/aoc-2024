@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { readData } from '../../shared.ts';
+import { readLines } from '../../shared.ts';
 import { parseLines } from './parse.ts';
 
 function getCardValues(cards: number[][][]) {
@@ -19,7 +19,7 @@ function getCardValues(cards: number[][][]) {
 }
 
 export async function day4b(dataPath?: string) {
-  const data = await readData(dataPath);
+  const data = await readLines(dataPath);
   const originalCards = parseLines(data);
   const cardValues = getCardValues(originalCards);
   const cardCounts = Array(originalCards.length).fill(1);

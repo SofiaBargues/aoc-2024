@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { readData } from '../../shared.ts';
+import { readLines } from '../../shared.ts';
 import { ReadingSequence, parseLines } from './parse.ts';
 
 function getDiffArray(sequence: ReadingSequence): ReadingSequence {
@@ -49,7 +49,7 @@ function buildDiffArrays(sequence: ReadingSequence) {
 }
 
 export async function day9b(dataPath?: string) {
-  const data = await readData(dataPath);
+  const data = await readLines(dataPath);
   let readingSequences = parseLines(data);
 
   let reversedReadingSequences = readingSequences.map((seq) => seq.reverse());

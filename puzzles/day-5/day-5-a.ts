@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { readData } from '../../shared.ts';
+import { readLines } from '../../shared.ts';
 import { MapRange, convertInputToObject, parseSeeds } from './parse.ts';
 
 function findNextNumber(input: number, mapRanges: MapRange[]): number {
@@ -17,7 +17,7 @@ function findNextNumber(input: number, mapRanges: MapRange[]): number {
 }
 
 export async function day5a(dataPath?: string) {
-  const data = await readData(dataPath);
+  const data = await readLines(dataPath);
   const maps = convertInputToObject(data);
   const seeds = parseSeeds(data[0]);
   const seed2soil = maps['seed-to-soil'];

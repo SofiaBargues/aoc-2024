@@ -1,9 +1,9 @@
 import chalk from 'chalk';
-import { readData } from '../../shared.ts';
+import { readLines } from '../../shared.ts';
 import { parseLines } from './parse.ts';
 
 export async function day8b(dataPath?: string) {
-  const data = await readData(dataPath);
+  const data = await readLines(dataPath);
   const directions = data[0];
   const desertMap = parseLines(data.slice(2));
   // console.log({ desertMap, directions });

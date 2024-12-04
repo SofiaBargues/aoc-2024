@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { readData } from '../../shared.ts';
+import { readLines } from '../../shared.ts';
 import { Player, parseLines } from './parse.ts';
 
 const CARD_VALUES = [
@@ -85,7 +85,7 @@ function compareHands(player1: Player, player2: Player): number {
 }
 
 export async function day7a(dataPath?: string) {
-  const data = await readData(dataPath);
+  const data = await readLines(dataPath);
   const players = parseLines(data);
   const winOrderPlayers = players.sort(compareHands);
   console.log(getHandType(players[3]));

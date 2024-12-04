@@ -1,8 +1,8 @@
-import { readData } from '../../shared.ts';
 import chalk from 'chalk';
+import { readLines } from '../../shared.ts';
 
 export async function day16a(dataPath?: string) {
-  const data = await readData(dataPath);
+  const data = await readLines(dataPath);
   return 0;
 }
 

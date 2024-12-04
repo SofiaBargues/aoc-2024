@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { readData } from '../../shared.ts';
+import { readLines } from '../../shared.ts';
 import { Position, parseLines } from './parse.ts';
 
 function expandGalaxyX(galaxies: Position[], gaps: number[]) {
@@ -39,7 +39,7 @@ function distance2Galaxies(galaxy1: Position, galaxy2: Position) {
 }
 
 export async function day11a(dataPath?: string) {
-  const grid = await readData(dataPath);
+  const grid = await readLines(dataPath);
   let galaxies = parseLines(grid);
   galaxies = expandUniverse(galaxies, grid);
 

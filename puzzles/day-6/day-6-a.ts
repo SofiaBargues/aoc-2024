@@ -1,9 +1,9 @@
 import chalk from 'chalk';
-import { readData } from '../../shared.ts';
+import { readLines } from '../../shared.ts';
 import { parseLines } from './parse.ts';
 
 export async function day6a(dataPath?: string) {
-  const data = await readData(dataPath);
+  const data = await readLines(dataPath);
   const races = parseLines(data);
   let totalWinWays = 1;
   for (const race of races) {

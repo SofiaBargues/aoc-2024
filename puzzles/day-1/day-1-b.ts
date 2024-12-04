@@ -1,8 +1,8 @@
 import chalk from 'chalk';
-import { readData } from '../../shared.ts';
+import { readLines } from '../../shared.ts';
 
 export async function day1b(dataPath?: string) {
-  const lines = await readData(dataPath);
+  const lines = await readLines(dataPath);
 
   const list1: number[] = [];
   const list2: number[] = [];

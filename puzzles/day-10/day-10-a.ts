@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { readData } from '../../shared.ts';
+import { readLines } from '../../shared.ts';
 import {
   Grid,
   PipeType,
@@ -87,7 +87,7 @@ export function getCellPipe(grid: Grid, pos: Position): PipeType | undefined {
 }
 
 export async function day10a(dataPath?: string) {
-  const data = await readData(dataPath);
+  const data = await readLines(dataPath);
   const grid = parseLines(data);
   const startPos = findStartPosition(grid);
 

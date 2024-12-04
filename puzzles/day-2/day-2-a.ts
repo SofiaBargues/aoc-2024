@@ -1,9 +1,9 @@
 import chalk from 'chalk';
-import { readData } from '../../shared.ts';
+import { readLines } from '../../shared.ts';
 import { parseLines } from './parse.ts';
 
 export async function day2a(dataPath?: string) {
-  const data = await readData(dataPath);
+  const data = await readLines(dataPath);
   const reports = parseLines(data);
 
   // -1. let acc
@@ -31,9 +31,8 @@ export async function day2a(dataPath?: string) {
     }
     //
     //      3. si isSafe acc++
-    if(isSafe){
-      
-      acc++
+    if (isSafe) {
+      acc++;
     }
   }
   return acc;

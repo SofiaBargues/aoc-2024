@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { readData } from '../../shared.ts';
+import { readLines } from '../../shared.ts';
 import { Cell, Grid, parseLines } from './parse.ts';
 
 function transpose(grid: Grid): Grid {
@@ -44,7 +44,7 @@ function calculateLoad(grid: Grid): number {
 }
 
 export async function day14a(dataPath?: string) {
-  const data = await readData(dataPath);
+  const data = await readLines(dataPath);
   const grid = parseLines(data);
   const gridT = transpose(grid);
   const tiltedGridT = tiltGrid(gridT);

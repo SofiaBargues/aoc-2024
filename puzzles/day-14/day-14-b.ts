@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { readData } from '../../shared.ts';
+import { readLines } from '../../shared.ts';
 import { Cell, Grid, parseLines } from './parse.ts';
 
 function rotateLeft(array) {
@@ -66,7 +66,7 @@ function calculateLoad(grid: Grid): number {
 }
 
 export async function day14b(dataPath?: string) {
-  const data = await readData(dataPath);
+  const data = await readLines(dataPath);
   let grid = parseLines(data);
 
   // TODO: Optimize with performance test

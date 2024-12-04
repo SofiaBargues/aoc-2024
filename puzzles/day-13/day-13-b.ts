@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { readData } from '../../shared.ts';
+import { readLines } from '../../shared.ts';
 
 import { Grid, parseLines } from './parse.ts';
 
@@ -77,7 +77,7 @@ function getRowsEncoded(grid: Grid): string[] {
 }
 
 export async function day13b(dataPath?: string) {
-  const data = await readData(dataPath);
+  const data = await readLines(dataPath);
   const grids = parseLines(data);
   const gridResults = grids.map((grid) => getMirrorValue(grid));
 
