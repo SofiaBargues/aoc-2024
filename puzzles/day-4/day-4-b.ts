@@ -2,39 +2,57 @@ import chalk from 'chalk';
 import { readLines } from '../../shared.ts';
 import { parseLines } from './parse.ts';
 
-function getCardValues(cards: number[][][]) {
-  let cardValues = [];
+const diag1 = [
+  [1, 1],
+  [-1, -1],
+];
+const diag2 = [
+  [-1, 1],
+  [1, -1],
+];
+function isDiagValid(initPos, diag, grid) {
+  for (const dir of diag) {
+    let posM = [dir[0] + initPos[0], dir[1] + initPos[1]];
+    let posS = [dir[0] * -1 + initPos[0], dir[1] * -1 + initPos[1]];
 
-  for (const card of cards) {
-    const [winning_numbers, your_numbers] = card;
-    let winningMatchs = 0;
-    for (const winning_number of winning_numbers) {
-      if (your_numbers.includes(winning_number)) {
-        winningMatchs++;
+    if (isValidPos(posM, 'M', grid)) {
+      if (isValidPos(posS, 'S', grid)) {
+        return true;
       }
     }
-    cardValues.push(winningMatchs);
   }
-  return cardValues;
+  return false;
 }
 
+function wordSearch(initPos, grid) {
+  return isDiagValid(initPos, diag1, grid) && isDiagValid(initPos, diag2, grid)
+    ? 1
+    : 0;
+}
+
+function isValidPos(pos, targetLetter, grid) {
+  const [x, y] = pos;
+  if (x >= 0 && x <= grid.length - 1 && y >= 0 && y <= grid[0].length - 1) {
+    if (grid[x][y] === targetLetter) {
+      return true;
+    }
+  }
+  return false;
+}
 export async function day4b(dataPath?: string) {
   const data = await readLines(dataPath);
-  const originalCards = parseLines(data);
-  const cardValues = getCardValues(originalCards);
-  const cardCounts = Array(originalCards.length).fill(1);
-  console.log({ cardValues });
+  const grid = parseLines(data);
 
-  for (let i = 0; i < cardCounts.length; i++) {
-    const matches = cardValues[i];
-    for (let j = i + 1; j < i + 1 + matches; j++) {
-      cardCounts[j] += cardCounts[i];
+  let acc = 0;
+  for (let x = 0; x < grid.length; x++) {
+    for (let y = 0; y < grid[0].length; y++) {
+      if (grid[x][y] === 'A') {
+        acc += wordSearch([x, y], grid);
+      }
     }
   }
 
-  return cardCounts.reduce((accumulator, currentValue) => {
-    return accumulator + currentValue;
-  }, 0);
+  return acc;
 }
 
 const answer = await day4b();
