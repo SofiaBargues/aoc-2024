@@ -1,52 +1,53 @@
 import chalk from 'chalk';
 import { readLines } from '../../shared.ts';
-import { MapRange, convertInputToObject, parseSeeds } from './parse.ts';
+import { parseLines } from './parse.ts';
 
-function findNextNumber(input: number, mapRanges: MapRange[]): number {
-  for (const range of mapRanges) {
-    const rangeEnd = range.sourceStart + range.length - 1;
-    if (input >= range.sourceStart && input <= rangeEnd) {
-      // Range to modified int
-      const transform = range.destStart - range.sourceStart;
+export function getMiddleNumber(manual) {
+  return manual[Math.floor(manual.length / 2)];
+}
+export function isManualValid(manual, toTheRightOf) {
+  let seen = [];
+  for (const page of manual) {
+    if (toTheRightOf[page]) {
+      for (const rule of toTheRightOf[page]) {
+        if (seen.includes(rule)) {
+          return false;
+        }
+      }
+    }
+    seen.push(page);
+  }
+  return true;
+}
 
-      return input + transform;
+export function buildRules(relations) {
+  let obj = {};
+  for (const relation of relations) {
+    const [left, right] = relation;
+    if (left in obj) {
+      obj[left].push(right);
+    } else {
+      obj[left] = [right];
     }
   }
-
-  return input;
+  return obj;
 }
 
 export async function day5a(dataPath?: string) {
   const data = await readLines(dataPath);
-  const maps = convertInputToObject(data);
-  const seeds = parseSeeds(data[0]);
-  const seed2soil = maps['seed-to-soil'];
-  const soil2fertilizer = maps['soil-to-fertilizer'];
-  const fertilizer2water = maps['fertilizer-to-water'];
-  const water2light = maps['water-to-light'];
-  const light2temperature = maps['light-to-temperature'];
-  const temperature2humidity = maps['temperature-to-humidity'];
-  const humidity2location = maps['humidity-to-location'];
+  const { relations, manuals } = parseLines(data);
 
-  const results = [...seeds];
+  let acc = 0;
 
-  const transformations = [
-    'seed-to-soil',
-    'soil-to-fertilizer',
-    'fertilizer-to-water',
-    'water-to-light',
-    'light-to-temperature',
-    'temperature-to-humidity',
-    'humidity-to-location',
-  ];
+  const toTheRightOf = buildRules(relations);
 
-  for (const mapName of transformations) {
-    for (let i = 0; i < results.length; i++) {
-      results[i] = findNextNumber(results[i], maps[mapName]);
+  for (const manual of manuals) {
+    if (isManualValid(manual, toTheRightOf)) {
+      acc = acc + getMiddleNumber(manual);
     }
   }
 
-  return Math.min(...results);
+  return acc;
 }
 
 const answer = await day5a();
