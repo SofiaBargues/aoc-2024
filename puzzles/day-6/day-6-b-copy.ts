@@ -60,44 +60,27 @@ function arePosEqual(pos1, pos2) {
   return pos1[0] === pos2[0] && pos1[1] === pos2[1];
 }
 
-function debugPoses(poses, grid) {
-  const newGrid = grid.map((line) => line.slice());
-  for (const pose of poses) {
-    const [pos, dir] = pose;
-    newGrid[pos[0]][pos[1]] = dir;
-  }
-
-  console.log(newGrid);
-}
-
-function getPathPoses(pos: number[], dir: string, grid: string[][]) {
-  const poses = [];
-  while (isInMap(pos, grid)) {
-    poses.push([pos, dir]);
-    // Save
-    if (shouldTurn(pos, dir, grid)) {
-      // Update
-      dir = nextDir[dir];
-    } else {
-      // Update
-      pos = getNextPos(pos, dir);
-    }
-  }
-  // debugPoses(poses, grid);
-
-  return poses;
-}
-
-function isLoop(pos: number[], dir: string, grid: string[][]) {
-  const seen = new Set();
+function canPlaceObstacle(
+  pos: number[],
+  dir: string,
+  originalGrid: string[][],
+  obstaclePos: number[]
+) {
+  const grid = originalGrid.map((line) => line.slice());
+  grid[obstaclePos[0]][obstaclePos[1]] = 'O';
+  // Place obstacle
+  // if (arePosEqual(pos, [6, 3])) {
+  //   console.log(grid);
+  // }
 
   while (isInMap(pos, grid)) {
-    const plain = JSON.stringify([pos, dir]);
-    if (seen.has(plain)) {
+    // Is loop
+    if (getValue(pos, grid).includes(dir)) {
+      // console.log(grid);
       return true;
     }
-    seen.add(plain);
     // Save
+    writeDir(pos, dir, grid);
     if (shouldTurn(pos, dir, grid)) {
       // Update
       dir = nextDir[dir];
@@ -109,35 +92,57 @@ function isLoop(pos: number[], dir: string, grid: string[][]) {
   return false;
 }
 
+function writeDir(pos, dir, grid: string[][]) {
+  const curr = getValue(pos, grid);
+  if (['.', '#'].includes(curr)) {
+    grid[pos[0]][pos[1]] = dir;
+  } else if (curr === dir) {
+    console.log('Error, loop found');
+  } else {
+    grid[pos[0]][pos[1]] = curr + dir;
+  }
+}
+
 export async function day6b(dataPath?: string) {
   const lines = await readLines(dataPath);
   const grid = lines.map((line) => line.split(''));
 
   let pos = getInitialPosition(grid);
   const initPos = [...pos];
-  let initDir = getValue(pos, grid);
+  let dir = getValue(pos, grid);
+  grid[initPos[0]][initPos[1]] = '.';
 
-  const seen = new Set(
-    getPathPoses(pos, initDir, grid).map((pose) => JSON.stringify(pose[0]))
-  );
-  const originalTray = [...seen].map((val) => JSON.parse(val));
-  // debugPoses(
-  //   originalTray.map((val) => [val, '*']),
-  //   grid
-  // );
-  let placed = 0;
-  for (const pos of originalTray) {
-    if (arePosEqual(pos, initPos)) {
-      continue;
-    }
-    grid[pos[0]][pos[1]] = '#';
+  const placed = new Set();
 
-    if (isLoop(initPos, initDir, grid)) {
-      placed++;
+  while (isInMap(pos, grid)) {
+    // Check potential loops
+    const addedObstaclePos = getNextPos(pos, dir);
+    if (
+      !arePosEqual(addedObstaclePos, initPos) &&
+      !placed.has(JSON.stringify(addedObstaclePos))
+    ) {
+      if (
+        isInMap(addedObstaclePos, grid) &&
+        getValue(addedObstaclePos, grid) !== '#'
+      ) {
+        if (canPlaceObstacle([...pos], dir, grid, addedObstaclePos)) {
+          placed.add(JSON.stringify(addedObstaclePos));
+        }
+      }
     }
-    grid[pos[0]][pos[1]] = '.';
+    // Traverse
+    writeDir(pos, dir, grid);
+    if (shouldTurn(pos, dir, grid)) {
+      // Update
+      dir = nextDir[dir];
+    } else {
+      // Update
+      pos = getNextPos(pos, dir);
+    }
   }
-  return placed;
+  // console.log(placed);
+
+  return placed.size;
 }
 
 const answer = await day6b();
