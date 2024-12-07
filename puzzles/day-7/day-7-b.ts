@@ -1,108 +1,50 @@
 import chalk from 'chalk';
 import { readLines } from '../../shared.ts';
-import { Player, parseLines } from './parse.ts';
+import { Calibration, parseLines } from './parse.ts';
 
-const CARD_VALUES = [
-  'A',
-  'K',
-  'Q',
-  'T',
-  '9',
-  '8',
-  '7',
-  '6',
-  '5',
-  '4',
-  '3',
-  '2',
-  'J',
-];
+const OPERATIONS = ['+', '*', '||'];
 
-const HAND_TYPES = [
-  'Five',
-  'Four',
-  'Full',
-  'Three',
-  'TwoPair',
-  'OnePair',
-  'High',
-];
-
-function getHandType(player: Player) {
-  // Return the type of a hand
-  const cardCounter = {};
-  let numJokers = 0;
-  for (const card of player.hand) {
-    if (card == 'J') {
-      numJokers++;
-    } else if (cardCounter[card] != undefined) {
-      cardCounter[card] += 1;
-    } else {
-      cardCounter[card] = 1;
-    }
+function operate(operation: string, left: number, right: number) {
+  if (operation === '+') {
+    return left + right;
+  } else if (operation === '*') {
+    return left * right;
+  } else if (operation === '||') {
+    return Number(String(left) + String(right));
   }
-
-  const sortedHand = Object.values<number>(cardCounter).sort((a, b) => b - a);
-  if (numJokers == 5) {
-    return 'Five';
-  }
-
-  sortedHand[0] += numJokers;
-
-  if (sortedHand[0] == 5) {
-    return 'Five';
-  }
-  if (sortedHand[0] == 4) {
-    return 'Four';
-  }
-  if (sortedHand[0] == 3 && sortedHand[1] == 2) {
-    return 'Full';
-  }
-  if (sortedHand[0] == 3) {
-    return 'Three';
-  }
-  if (sortedHand[0] == 2 && sortedHand[1] == 2) {
-    return 'TwoPair';
-  }
-  if (sortedHand[0] == 2) {
-    return 'OnePair';
-  }
-  return 'High';
+  throw new Error(`Invalid operation: ${operation}`);
 }
 
-function compareHands(player1: Player, player2: Player): number {
-  let type1 = getHandType(player1);
-  let type2 = getHandType(player2);
+function isValid(calibration: Calibration) {
+  const { numbers: allNumbers, target } = calibration;
+  const [first, ...numbers] = allNumbers;
 
-  if (HAND_TYPES.indexOf(type1) > HAND_TYPES.indexOf(type2)) {
-    return -1;
-  } else if (HAND_TYPES.indexOf(type1) < HAND_TYPES.indexOf(type2)) {
-    return 1;
-  }
-
-  for (let i = 0; i < player1.hand.length; i++) {
-    const card1 = player1.hand[i];
-    const card2 = player2.hand[i];
-    if (CARD_VALUES.indexOf(card1) > CARD_VALUES.indexOf(card2)) {
-      return -1;
-    } else if (CARD_VALUES.indexOf(card1) < CARD_VALUES.indexOf(card2)) {
-      return 1;
+  function dfs(index: number, current: number) {
+    if (index === numbers.length) {
+      return current === target;
     }
+    const num = numbers[index];
+    for (const operation of OPERATIONS) {
+      if (dfs(index + 1, operate(operation, current, num))) {
+        return true;
+      }
+    }
+    return false;
   }
 
-  return 0;
+  return dfs(0, first);
 }
 
 export async function day7b(dataPath?: string) {
   const data = await readLines(dataPath);
-  const players = parseLines(data);
-  const winOrderPlayers = players.sort(compareHands);
-  console.log(getHandType(players[3]));
-
-  console.log(winOrderPlayers);
-  return winOrderPlayers.reduce((total, player, i) => {
-    return total + player.bid * (i + 1);
-  }, 0);
+  const calibrations = parseLines(data);
+  let validTotal = 0;
+  for (const calibration of calibrations) {
+    if (isValid(calibration)) {
+      validTotal += calibration.target;
+    }
+  }
+  return validTotal;
 }
 
 const answer = await day7b();
