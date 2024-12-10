@@ -2,15 +2,26 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "type": "node",
+      "type": "bun",
       "request": "launch",
-      "name": "Debug myservice",
+      "name": "Debug Puzzle",
+      "program": "${file}",
+      "args": ["${relativeFileDirname}/${fileBasenameNoExtension}.data.txt"],
       "cwd": "${workspaceFolder}",
-      "runtimeExecutable": "/home/sofi/.nvm/versions/node/v18.16.0/bin/nx",
-      "runtimeArgs": ["serve", "myservice", "--inspect", "--data=sample "],
-      "skipFiles": ["<node_internals>/**", "${workspaceFolder}/node_modules/*"],
-      "outFiles": ["${workspaceFolder}/dist/**/*.js"]
+      "stopOnEntry": false,
+      "watchMode": false
+    },
+    {
+      "type": "bun",
+      "request": "launch",
+      "name": "Debug Puzzle (Sample)",
+      "program": "${file}",
+      "args": [
+        "${relativeFileDirname}/${fileBasenameNoExtension}.sample-data.txt"
+      ],
+      "cwd": "${workspaceFolder}",
+      "stopOnEntry": false,
+      "watchMode": false
     }
-    // repeat for each debuggable app
   ]
 }
