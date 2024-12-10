@@ -105,6 +105,7 @@
     "day-25-b:sample": "bun run puzzles/day-25/day-25-b.ts puzzles/day-25/day-25-b.sample-data.txt"
   },
   "dependencies": {
+    "bun": "^1.1.38",
     "chalk": "^5.3.0"
   },
   "devDependencies": {
