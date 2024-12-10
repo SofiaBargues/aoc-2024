@@ -21,30 +21,9 @@ function expand(disk: string[]): string[] {
 }
 
 function swapMany(disk, aStart, bStart, num) {
-  // if (!disk.slice(bStart, bStart + num).every((val) => val === disk[bStart])) {
-  //   console.log('incorrect slice', disk.slice(bStart, bStart + num));
-  // }
-  if (
-    disk[bStart - 1] === disk[bStart] ||
-    disk[bStart + num] === disk[bStart + num - 1]
-  ) {
-    console.log(
-      'incorrect ends',
-      disk[bStart - 1],
-      disk[bStart],
-      disk[bStart + num],
-      disk[bStart + num - 1]
-    );
-  }
-  // if(disk[aStart-1] === '.'){
-  //   console.error("could swap earlier")
-  // }
-  for (let k = 0; k < num; k++) {
-    // if (disk[aStart + k] !== '.' || disk[bStart + k] === '.') {
-    //   console.error('incorrect swap', disk[aStart + k], disk[bStart + k]);
-    // }
-    [disk[aStart + k], disk[bStart + k]] = [disk[bStart + k], disk[aStart + k]];
-  }
+  const temp = disk.slice(bStart, bStart + num);
+  disk.splice(bStart, num, ...disk.slice(aStart, aStart + num));
+  disk.splice(aStart, num, ...temp);
 }
 
 function findNPoints(disk, n) {
@@ -68,8 +47,10 @@ function findNPoints(disk, n) {
 function compact(disk: string[]): string[] {
   let fileSize = 0;
   let fileId = '.';
+
   for (let r = disk.length - 1; r >= 0; r--) {
     const val = disk[r];
+
     if (val === fileId && fileId !== '.') {
       fileSize++;
     } else {
@@ -77,10 +58,9 @@ function compact(disk: string[]): string[] {
         const l = findNPoints(disk.slice(0, r + 1), fileSize);
         if (l !== -1) {
           swapMany(disk, l, r + 1, fileSize);
-          // console.log(disk.join());
         }
       }
-      fileId = val;
+      fileId = disk[r];
       fileSize = 1;
     }
   }
