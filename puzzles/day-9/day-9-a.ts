@@ -1,66 +1,75 @@
 import chalk from 'chalk';
 import { readLines } from '../../shared.ts';
-import { ReadingSequence, parseLines } from './parse.ts';
+import { parseLines } from './parse.ts';
 
-function getDiffArray(sequence: ReadingSequence): ReadingSequence {
-  return sequence.reduce((diffSeq, el, i, array) => {
-    if (i < array.length - 1) {
-      diffSeq.push(array[i + 1] - el);
+function expand(disk: string[]): string[] {
+  const expanded = [];
+  for (let i = 0; i < disk.length; i += 2) {
+    const nums = Number(disk[i]);
+    const dots = Number(disk[i + 1]);
+    const id = i / 2;
+    for (let j = 0; j < nums; j++) {
+      expanded.push(id.toString());
     }
-    return diffSeq;
-  }, []);
-}
-
-function extendDiffArrays(allArrays: ReadingSequence[]): ReadingSequence[] {
-  const extendedAllArrays = allArrays
-    .reverse()
-    .map((sequence, i, array) => {
-      sequence.push(
-        array[i - 1]
-          ? sequence[sequence.length - 1] +
-              array[i - 1][array[i - 1].length - 1]
-          : 0
-      );
-      return sequence;
-    })
-    .reverse();
-  return extendedAllArrays;
-}
-
-function getNextValue(sequence: ReadingSequence): number {
-  const allArrays = buildDiffArrays(sequence);
-  console.log({ allArrays });
-  const allArraysExtended = extendDiffArrays(allArrays);
-  console.log(allArraysExtended);
-  return allArraysExtended[0][allArraysExtended[0].length - 1];
-}
-
-function buildDiffArrays(sequence: ReadingSequence) {
-  const allArrays = [[...sequence]];
-
-  for (let i = 0; i < sequence.length; i++) {
-    const diffArray = getDiffArray(allArrays[i]);
-    allArrays.push(diffArray);
-    if (diffArray.every((el) => el === 0)) {
-      break;
+    if (dots != undefined) {
+      for (let j = 0; j < dots; j++) {
+        expanded.push('.');
+      }
     }
   }
-  return allArrays;
+  return expanded;
+}
+
+function compact(disk: string[]): string[] {
+  let r = disk.length - 1;
+  let l = 0;
+
+  while (r >= l) {
+    if (disk[l] === '.' && disk[r] != '.') {
+      //SWAP -> Índices de los elementos a intercambiar
+      let indice1 = r;
+      let indice2 = l;
+
+      // Intercambio de elementos
+      let temp = disk[indice1];
+      disk[indice1] = disk[indice2];
+      disk[indice2] = temp;
+
+      //avanzo los dos
+      l++;
+      r--;
+    }
+
+    if (disk[l] != '.') {
+      l++;
+    }
+    if (disk[r] === '.') {
+      r--;
+    }
+  }
+  return disk;
+}
+
+function checkSum(disk: string[]) {
+  let acc = 0;
+  for (let i = 0; i <= disk.length - 1; i++) {
+    const char = disk[i];
+    if (char === '.') {
+      break;
+    } else {
+      acc += Number(char) * i;
+    }
+  }
+  return acc;
 }
 
 export async function day9a(dataPath?: string) {
   const data = await readLines(dataPath);
-  let readingSequences = parseLines(data);
+  let disk = parseLines(data)[0];
 
-  console.log(readingSequences);
-  let predictedMeasurementsSum = 0;
-  for (const readingSequence of readingSequences) {
-    const nextValue = getNextValue(readingSequence);
-    console.log(nextValue);
-    predictedMeasurementsSum += nextValue;
-  }
-
-  return predictedMeasurementsSum;
+  disk = expand(disk);
+  disk = compact(disk);
+  return checkSum(disk);
 }
 
 const answer = await day9a();

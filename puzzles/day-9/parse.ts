@@ -1,9 +1,7 @@
-export type ReadingSequence = number[];
-
-export const parseLines = (lines: string[]): ReadingSequence[] => {
+export const parseLines = (lines: string[]): string[][] => {
   lines = lines.filter((line) => !!line);
 
   return lines.map((line) =>
-    line.split(' ').map((numStr) => parseInt(numStr, 10))
+    line.split('')
   );
 };
