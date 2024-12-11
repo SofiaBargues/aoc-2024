@@ -1,16 +1,6 @@
-export type Position = {
-  x: number;
-  y: number;
-};
-
-export const parseLines = (lines: string[]): Position[] => {
+export const parseLines = (lines: string[]): number[] => {
   lines = lines.filter((line) => !!line);
+  let stones = lines[0].split(' ').map((x) => Number(x));
 
-  const galaxies: Position[] = [];
-  lines.forEach((line, y) =>
-    line.split('').forEach((char, x) => {
-      char == '#' && galaxies.push({ x, y });
-    })
-  );
-  return galaxies;
+  return stones;
 };
