@@ -19,36 +19,44 @@ function walk(
   initVal: string,
   grid: string[][],
   pos: number[]
-) {
+): number {
   // Base condition
   if (region.has(JSON.stringify(pos))) {
-    return;
+    return 0;
   }
   if (!isInGrid(grid, pos)) {
-    return;
+    return 1;
   }
   let val = grid[pos[0]][pos[1]];
   if (val !== initVal) {
-    return;
+    return 1;
   }
   region.add(JSON.stringify(pos));
   // Recursion
+  let acc = 0;
   for (const [dx, dy] of dirs) {
     let [x, y] = pos;
     let newPos = [x + dx, y + dy];
-    walk(region, initVal, grid, newPos);
+    acc += walk(region, initVal, grid, newPos);
   }
+  return acc;
 }
 
-function findRegion(initPos: number[], grid: string[][]): number[][] {
+type Region = {
+  fences: number;
+  positions: number[][];
+};
+
+function findRegion(initPos: number[], grid: string[][]): Region {
   let region: Set<string> = new Set();
   let initVal = grid[initPos[0]][initPos[1]];
-  walk(region, initVal, grid, initPos);
-  return [...region].map((x) => JSON.parse(x));
+  let fences = walk(region, initVal, grid, initPos);
+  const positions = [...region].map((x) => JSON.parse(x));
+  return { fences, positions };
 }
 
-function findRegions(grid: string[][]): number[][][] {
-  let regions: number[][][] = [];
+function findRegions(grid: string[][]): Region[] {
+  let regions: Region[] = [];
   let seen = new Set();
   let n = grid.length;
   let m = grid[0].length;
@@ -58,7 +66,8 @@ function findRegions(grid: string[][]): number[][][] {
         continue;
       }
       let region = findRegion([x, y], grid);
-      region.forEach((x: number[]) => seen.add(JSON.stringify(x)));
+
+      region.positions.forEach((x: number[]) => seen.add(JSON.stringify(x)));
       regions.push(region);
       // console.log(grid[x][y]);
     }
@@ -73,11 +82,14 @@ export async function day12a(dataPath?: string) {
   let regions = findRegions(garden);
   // 2. area y perimetro de cada region
   //     area= cantida de pots
-  let area = regions.map((r)=>r.length);
   //     perimetro= vecesque encuentrto un vecino chequeado desde cada pot
+  console.log(regions);
   // 3. para cada region total += area * perimetro
-  console.log(area);
-  return 0;
+  let acc = 0;
+  for (const region of regions) {
+    acc += region.positions.length * region.fences;
+  }
+  return acc;
 }
 
 const answer = await day12a();
