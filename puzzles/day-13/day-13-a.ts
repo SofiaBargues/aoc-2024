@@ -1,63 +1,60 @@
 import chalk from 'chalk';
 import { readLines } from '../../shared.ts';
-import { Grid, parseLines } from './parse.ts';
+import { Machine, parseLines } from './parse.ts';
+function correctPrecision(value) {
+  const epsilon = 1e-10; // Define the acceptable margin of error
 
-function transpose(grid: Grid): Grid {
-  return grid[0].map((_, colIndex) => grid.map((row) => row[colIndex]));
-}
-
-function getMirrorValue(grid: Grid): number {
-  const rowsEncoded = getRowsEncoded(grid);
-  const transposedGrid = transpose(grid);
-  const colsEncoded = getRowsEncoded(transposedGrid);
-
-  const mirrorRowIdx = rowsEncoded.findIndex(isMirror);
-  const mirrorColIdx = colsEncoded.findIndex(isMirror);
-
-  console.log({ mirrorRowIdx, mirrorColIdx });
-  if (mirrorColIdx != -1) {
-    return mirrorColIdx;
-  } else if (mirrorRowIdx != -1) {
-    return mirrorRowIdx * 100;
-  } else {
-    throw Error('Row or Col not found');
+  // Check if the value is very close to an integer
+  if (Math.abs(value - Math.round(value)) < epsilon) {
+    return Math.round(value); // Adjust to the nearest integer
   }
+
+  // Otherwise, return the original value
+  return value;
 }
 
-function isMirror(value: number, rowIdx: number, arr: number[]): boolean {
-  if (rowIdx == 0) return false;
+function solveEquations(machine: Machine) {
+  let [ax, ay] = machine[0];
+  let [bx, by] = machine[1];
+  let [px, py] = machine[2];
+  let Bt = (py - (px * ay) / ax) / ((-bx * ay) / ax + by);
+  let At = (px - Bt * bx) / ax;
+  [At, Bt] = [correctPrecision(At), correctPrecision(Bt)];
 
-  let halfLength = Math.min(rowIdx, arr.length - rowIdx);
-  const startIdx = rowIdx - halfLength;
-  for (let i = 0; i < halfLength; i++) {
-    // console.log({
-    //   l: arr[rowIdx - 1 - i],
-    //   lidx: rowIdx - 1 - i,
-    //   r: arr[rowIdx + i],
-    //   ridx: rowIdx + i,
-    // });
-    if (arr[rowIdx - 1 - i] != arr[rowIdx + i]) {
-      return false;
-    }
+  if (At < 0 || Bt < 0) {
+    console.log('negative', At, Bt);
+    return 0;
   }
-  return true;
-}
+  if (At > 100 || Bt > 100) {
+    console.log('morethan100times', At, Bt);
+    return 0;
+  }
+  if (!Number.isInteger(At) || !Number.isInteger(Bt)) {
+    console.log('not Integer', At, Bt);
+    return 0;
+  }
 
-function getRowsEncoded(grid: Grid) {
-  return grid.map((row) =>
-    parseInt(
-      row.reduce((acc, cell) => acc + String(cell), ''),
-      10
-    )
-  );
+  let tokenPrice = At * 3 + Bt;
+  console.log(At, Bt);
+  console.log(tokenPrice);
+
+  return tokenPrice;
 }
 
 export async function day13a(dataPath?: string) {
   const data = await readLines(dataPath);
-  const grids = parseLines(data);
-  const gridResults = grids.map((grid) => getMirrorValue(grid));
+  // 1. maquinas
+  const machines = parseLines(data);
+  let result = 0;
+  // 2. por cada maquina encuento min tokens to prize, si exite
 
-  return gridResults.reduce((acc, val) => acc + val, 0);
+  for (const machine of machines) {
+    console.log('machine');
+
+    result += solveEquations(machine);
+  }
+  // 3. suma de todos los tokens
+  return result;
 }
 
 const answer = await day13a();

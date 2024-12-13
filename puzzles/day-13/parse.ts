@@ -1,39 +1,29 @@
-// export enum CellType {
-//   '.' = 0, // ASH
-//   '#' = 1, // ROCK
-// }
+export type Machine = number[][];
+export const parseLines = (lines: string[]) => {
+  const machines: Machine[] = [];
+  let currentMachine: number[][] = [];
 
-export type Conditions = string[];
+  for (const line of lines) {
+    // Match Button A, Button B, and Prize lines using regex
+    const buttonMatch = line.match(/Button [AB]: X\+([0-9]+), Y\+([0-9]+)/);
+    const prizeMatch = line.match(/Prize: X=([0-9]+), Y=([0-9]+)/);
 
-export type Cell =
-  | 0 // ASH
-  | 1; //ROCK
+    if (buttonMatch) {
+      // Extract X and Y values and add them to the current machine
+      const x = parseInt(buttonMatch[1], 10);
+      const y = parseInt(buttonMatch[2], 10);
+      currentMachine.push([x, y]);
+    } else if (prizeMatch) {
+      // Extract X and Y values and add them to the current machine
+      const x = parseInt(prizeMatch[1], 10);
+      const y = parseInt(prizeMatch[2], 10);
+      currentMachine.push([x, y]);
 
-export type Grid = Cell[][];
-
-export const parseLines = (lines: string[]): Grid[] => {
-  const rawGrids: Grid[] = [[]];
-
-  let gridIdx: number = 0;
-  lines.forEach((line) => {
-    if (line != '') {
-      rawGrids[gridIdx].push(lineToEnumVals(line));
-    } else {
-      rawGrids.push([]);
-      gridIdx++;
+      // Push the completed machine to the machines array
+      machines.push(currentMachine);
+      currentMachine = []; // Reset for the next machine
     }
-  });
+  }
 
-  return rawGrids;
+  return machines;
 };
-function lineToEnumVals(line: string): Cell[] {
-  return line.split('').map((char) => {
-    if (char == '#') {
-      return 1;
-    } else if (char == '.') {
-      return 0;
-    } else {
-      throw Error('Unexpected value');
-    }
-  });
-}
