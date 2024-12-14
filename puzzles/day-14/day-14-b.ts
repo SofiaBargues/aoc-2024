@@ -1,86 +1,47 @@
 import chalk from 'chalk';
 import { readLines } from '../../shared.ts';
-import { Cell, Grid, parseLines } from './parse.ts';
+import { parseLines } from './parse.ts';
 
-function rotateLeft(array) {
-  var result = [];
-  array.forEach(function (a, i, aa) {
-    a.forEach(function (b, j, bb) {
-      result[j] = result[j] || [];
-      result[j][aa.length - i - 1] = b;
-    });
-  });
-  return result;
-}
+let xLen = 101;
+let yLen = 103;
+let time = 100;
 
-function rotateRight(array) {
-  var result = [];
-  array.forEach(function (a, i, aa) {
-    a.forEach(function (b, j, bb) {
-      result[bb.length - j - 1] = result[bb.length - j - 1] || [];
-      result[bb.length - j - 1][i] = b;
-    });
-  });
-  return result;
-}
-
-function transpose(grid: Grid): Grid {
-  return grid[0].map((_, colIndex) => grid.map((row) => row[colIndex]));
-}
-
-function tiltRow(row: Cell[]): Cell[] {
-  const newRow: Cell[] = new Array(row.length).fill('.');
-  let lastRockIdx = -1;
-  let roundRocksCount = 0;
-  for (let i = 0; i < row.length; i++) {
-    if (row[i] == 'O') {
-      roundRocksCount++;
-    }
-    if (row[i] == '#') {
-      newRow.fill('O', lastRockIdx + 1, lastRockIdx + 1 + roundRocksCount);
-      newRow[i] = '#';
-      lastRockIdx = i;
-      roundRocksCount = 0;
-    } else if (i == row.length - 1) {
-      // last
-      newRow.fill('O', lastRockIdx + 1, lastRockIdx + 1 + roundRocksCount);
-      roundRocksCount = 0;
-    }
+function move(t: number, p: number[], v: number[]): number[] {
+  let [Px, Py] = p;
+  let [Vx, Vy] = v;
+  let Pfx = t * Vx + Px;
+  let Pfy = t * Vy + Py;
+  Pfx = Pfx % xLen;
+  Pfy = Pfy % yLen;
+  if (Pfx < 0) {
+    Pfx += xLen;
   }
-
-  return newRow;
-}
-
-function tiltGrid(grid: Grid): Grid {
-  return grid.map((row) => tiltRow(row));
-}
-
-function calculateLoad(grid: Grid): number {
-  return grid
-    .map((row) =>
-      row
-        .map((cell, i, arr) => (cell == 'O' ? arr.length - i : 0))
-        .reduce((acc, val) => acc + val, 0)
-    )
-    .reduce((acc, val) => acc + val, 0);
+  if (Pfy < 0) {
+    Pfy += yLen;
+  }
+  return [Pfx, Pfy];
 }
 
 export async function day14b(dataPath?: string) {
   const data = await readLines(dataPath);
-  let grid = parseLines(data);
-
-  // TODO: Optimize with performance test
-  for (let i = 0; i < 4000000000; i++) {
-    if (i % 40000000 == 0) {
-      console.log('percent: ', i / 40000000);
-    }
-    grid = rotateRight(grid);
-    grid = tiltGrid(grid);
+  const robots = parseLines(data);
+  // Input: Robots P,V
+  let allNewPos: number[] = [];
+  for (const robot of robots) {
+    let newPos = move(time, robot.pos, robot.vel);
+    allNewPos.push(...newPos);
   }
 
-  const load = calculateLoad(grid);
+  console.log(allNewPos);
+  // Q1=countQuarterRobots({xs: })
+  // Q2=countQuarterRobots(..)
+  // Q3=countQuarterRobots(..)``  
+  // Q4=countQuarterRobots(..)
 
-  return load;
+  // securityFactor= Q1*Q2*Q3*Q4
+
+  // Output: securityFactor
+  return 0;
 }
 
 const answer = await day14b();
