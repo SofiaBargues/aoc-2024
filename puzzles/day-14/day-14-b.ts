@@ -2,9 +2,10 @@ import chalk from 'chalk';
 import { readLines } from '../../shared.ts';
 import { parseLines } from './parse.ts';
 
-let xLen = 101;
-let yLen = 103;
-let time = 100;
+// let xLen = 101;
+// let yLen = 103;
+let xLen = 11;
+let yLen = 7;
 
 function move(t: number, p: number[], v: number[]): number[] {
   let [Px, Py] = p;
@@ -22,24 +23,48 @@ function move(t: number, p: number[], v: number[]): number[] {
   return [Pfx, Pfy];
 }
 
+function removeFromGrid(grid: number[][], pos: number[]) {
+  const [x, y] = pos;
+  grid[y][x] = grid[y][x] - 1;
+}
+
+function addToGrid(grid: number[][], pos: number[]) {
+  const [x, y] = pos;
+  grid[y][x] = grid[y][x] + 1;
+}
+
 export async function day14b(dataPath?: string) {
   const data = await readLines(dataPath);
   const robots = parseLines(data);
+
   // Input: Robots P,V
-  let allNewPos: number[] = [];
+  const iterations: { num: number; grid: number[][] } = [];
+  const grid: number[][] = new Array(yLen)
+    .fill(0)
+    .map((_) => new Array(xLen).fill(0));
+
   for (const robot of robots) {
-    let newPos = move(time, robot.pos, robot.vel);
-    allNewPos.push(...newPos);
+    addToGrid(grid, robot.pos);
+  }
+  iterations.push({
+    num: 0,
+    grid: grid.map((line) => line.slice()),
+  });
+
+  for (let i = 1; i < 200; i++) {
+    for (const robot of robots) {
+      let newPos = move(1, robot.pos, robot.vel);
+      removeFromGrid(grid, robot.pos);
+      addToGrid(grid, newPos);
+      robot.pos = newPos;
+    }
+    iterations.push({
+      num: i,
+      grid: grid.map((line) => line.slice()),
+    });
   }
 
-  console.log(allNewPos);
-  // Q1=countQuarterRobots({xs: })
-  // Q2=countQuarterRobots(..)
-  // Q3=countQuarterRobots(..)``  
-  // Q4=countQuarterRobots(..)
-
-  // securityFactor= Q1*Q2*Q3*Q4
-
+  Bun.write('puzzles/day-14/day-14-b.json', JSON.stringify(iterations));
   // Output: securityFactor
   return 0;
 }
