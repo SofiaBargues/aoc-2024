@@ -159,25 +159,48 @@ function printGrid(grid: string[][]) {
   console.log(grid.map((line) => line.join('')).join('\n'));
 }
 
+function boxesBroken(grid: string[][]) {
+  let n = grid.length;
+  let m = grid[0].length;
+  for (let x = 0; x < n; x++) {
+    for (let y = 0; y < m; y++) {
+      if (grid[x][y] == '[') {
+        if (grid[x][y + 1] !== ']') {
+          return true;
+        }
+      }
+      if (grid[x][y] == ']') {
+        if (grid[x][y - 1] !== '[') {
+          return true;
+        }
+      }
+    }
+  }
+  return false;
+}
+
 export async function day15b(dataPath?: string) {
   const data = await readLines(dataPath);
   let { grid, moves } = parseLinesB(data);
-  printGrid(grid);
+  // printGrid(grid);
 
   let robot = getRobotInitialPos(grid);
   let count = 0;
+  let hasLogged = false;
   for (const move of moves) {
-    const logCondition = count > 20 && count < 23;
+    const logCondition = count >= 420 && count < 430; // boxesBroken(grid) && !hasLogged;
     robot = tryMove(grid, robot, move, logCondition);
     count++;
     if (logCondition) {
+      hasLogged = true;
+      console.log(count);
       console.log(move);
       console.log(robot);
       printGrid(grid);
     }
   }
-  console.log('final');
-  printGrid(grid);
+  // console.log('final');
+  // printGrid(grid);
 
   return getGpsResult(grid);
 }
