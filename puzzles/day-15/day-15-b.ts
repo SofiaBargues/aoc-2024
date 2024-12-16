@@ -116,11 +116,31 @@ function tryMove(
   }
   const cellsToMove = boxes;
 
-  doMove(grid, cellsToMove, dir);
+  doMove(grid, cellsToMove, dir, log);
   return [robot[0] + dir[0], robot[1] + dir[1]];
 }
 
-function doMove(grid: string[][], cellsToMove: number[][], dir: number[]) {
+function doMove(
+  grid: string[][],
+  cellsToMove: number[][],
+  dir: number[],
+  log?: boolean
+) {
+  if (dir[0]) {
+    cellsToMove.sort((a, b) => {
+      if (dir[0] > 0) {
+        return a[0] > b[0] ? 1 : -1;
+      }
+      if (dir[0] < 0) {
+        return a[0] < b[0] ? 1 : -1;
+      }
+      return 0;
+    });
+  }
+  if (log) {
+    console.log('dir', dir);
+    console.log(cellsToMove);
+  }
   while (cellsToMove.length) {
     const curr = cellsToMove.pop()!;
     const next = [curr[0] + dir[0], curr[1] + dir[1]];
@@ -188,7 +208,7 @@ export async function day15b(dataPath?: string) {
   let count = 0;
   let hasLogged = false;
   for (const move of moves) {
-    const logCondition = count >= 420 && count < 430; // boxesBroken(grid) && !hasLogged;
+    const logCondition = boxesBroken(grid) && !hasLogged;
     robot = tryMove(grid, robot, move, logCondition);
     count++;
     if (logCondition) {
