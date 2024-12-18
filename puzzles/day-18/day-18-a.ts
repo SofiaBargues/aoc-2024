@@ -17,7 +17,7 @@ function shortestPath(grid: string[][], start: number[], goal: number[]) {
   seen.add(JSON.stringify(start));
   while (queue.length > 0) {
     let [x, y, dist] = queue.shift()!;
-    if (x === goal[0] && y === goal[y]) {
+    if (x === goal[0] && y === goal[1]) {
       return dist;
     }
     //         //RECURSION
@@ -48,14 +48,14 @@ function buildGrid(n: number, m: number, obstacles: number[][], bytes: number) {
 }
 
 export async function day18a(dataPath?: string) {
+  let bytes = 1024;
+  let goal = [70, 70];
   const data = await readLines(dataPath);
   const obstacles = parseLines(data);
   console.log(obstacles);
-  let goal = [6, 6];
   let start = [0, 0];
   let n = goal[0] + 1;
   let m = goal[1] + 1;
-  let bytes = 12;
   let grid = buildGrid(n, m, obstacles, bytes);
   let dist = shortestPath(grid, start, goal);
 
