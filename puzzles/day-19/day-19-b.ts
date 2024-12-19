@@ -14,10 +14,16 @@ export async function day19b(dataPath?: string) {
 
   const largestTowelSize = Math.max(...towelsInput.map((x) => x.length));
 
+  const memo: Record<string, number> = {};
+
   function dfs(target: string): number {
     if (target.length == 0) {
       return 1;
     }
+    if (target in memo) {
+      return memo[target];
+    }
+
     // recursion
     let maxWordLen = Math.min(largestTowelSize, target.length);
     let count = 0;
@@ -27,6 +33,7 @@ export async function day19b(dataPath?: string) {
         count += dfs(target.slice(l));
       }
     }
+    memo[target] = count;
     return count;
   }
 
