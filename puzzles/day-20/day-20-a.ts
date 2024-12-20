@@ -63,6 +63,32 @@ function shortestPath(
   return -1;
 }
 
+function foundCheatSavings(grid: ('#' | number)[][]) {
+  let n = grid.length;
+  let m = grid[0].length;
+  let cheatSavings = [];
+  for (let x = 1; x <= n - 2; x++) {
+    for (let y = 1; y <= m - 2; y++) {
+      if (grid[x][y] === '#') {
+        let [left, right] = [grid[x][y - 1], grid[x][y + 1]];
+        if (left !== '#' && right !== '#') {
+          let savings = Math.abs(left - right) - 2;
+          if (savings > 0) {
+            cheatSavings.push(savings);
+          }
+        }
+      }
+      let [up, down] = [grid[x - 1][y], grid[x + 1][y]];
+      if (down !== '#' && up !== '#') {
+        const savings = Math.abs(up - down) - 2;
+        if (savings > 0) {
+          cheatSavings.push(savings);
+        }
+      }
+    }
+  }
+  return cheatSavings;
+}
 export async function day20a(dataPath?: string) {
   const data = await readLines(dataPath);
   const grid = parseLines(data);
@@ -83,9 +109,10 @@ export async function day20a(dataPath?: string) {
   );
   //     b. Replace S by 0 and E by baseTime
   // 3. encontrar todos los tiempos de cheats
+  const cheatsTimes = foundCheatSavings(grid);
   // 4. cuantos cheats te ahorran al menos 100 picoseg
 
-  return 0;
+  return cheatsTimes.filter((x)=>x>=100).length
 }
 
 const answer = await day20a();
