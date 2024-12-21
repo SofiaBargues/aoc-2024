@@ -72,10 +72,16 @@ v      +---+---+
   return seq;
 }
 
+const dirMoveSeqMemo: Record<string, string[]> = {};
+
 function getDirectionalMoveSequence(
   pCurr: [number, number],
   pNew: [number, number]
 ) {
+  if (dirMoveSeqMemo[`${pCurr[0]}-${pCurr[1]}-${pNew[0]}-${pNew[1]}`]) {
+    return dirMoveSeqMemo[`${pCurr[0]}-${pCurr[1]}-${pNew[0]}-${pNew[1]}`];
+  }
+
   const movement = [pNew[0] - pCurr[0], pNew[1] - pCurr[1]];
   const [x, y] = movement;
   let seq: string[] = [];
@@ -100,22 +106,39 @@ function getDirectionalMoveSequence(
       seq = seq.concat(new Array(-x).fill('^'));
     }
   }
+  dirMoveSeqMemo[`${pCurr[0]}-${pCurr[1]}-${pNew[0]}-${pNew[1]}`] = seq;
   return seq;
 }
 
-function codeToSequence(
+function dirCodeToSequence(
   sequence: string[],
-  posOfKey: Record<string, [number, number]>,
-  isNumeric: boolean
+  posOfKey: Record<string, [number, number]>
 ): string[] {
   let curr = 'A';
   let newSequence: string[] = [];
   for (const char of sequence) {
     const pCurr = posOfKey[curr];
     const pNew = posOfKey[char];
-    const mSeq = isNumeric
-      ? getNumericMoveSequence(pCurr, pNew)
-      : getDirectionalMoveSequence(pCurr, pNew);
+    const mSeq = getDirectionalMoveSequence(pCurr, pNew);
+    // console.log(char, movement, mSeq);
+    newSequence = newSequence.concat(mSeq);
+    newSequence.push('A');
+    curr = char;
+  }
+
+  return newSequence;
+}
+
+function numericCodeToSequence(
+  sequence: string[],
+  posOfKey: Record<string, [number, number]>
+): string[] {
+  let curr = 'A';
+  let newSequence: string[] = [];
+  for (const char of sequence) {
+    const pCurr = posOfKey[curr];
+    const pNew = posOfKey[char];
+    const mSeq = getNumericMoveSequence(pCurr, pNew);
     // console.log(char, movement, mSeq);
     newSequence = newSequence.concat(mSeq);
     newSequence.push('A');
@@ -130,14 +153,14 @@ export async function day21b(dataPath?: string) {
   const sequences: Record<string, string> = {};
   for (const code of codes) {
     // console.log(code);
-    let seq1 = codeToSequence(code.split(''), numericKeypad, true);
+    let seq1 = numericCodeToSequence(code.split(''), numericKeypad);
     // console.log(seq1.join(''));
     for (let i = 0; i < 25; i++) {
       console.log('step', i);
-      seq1 = codeToSequence(seq1, directionsKeypad, false);
+      seq1 = dirCodeToSequence(seq1, directionsKeypad, false);
     }
     // console.log(seq2.join(''));
-    const seq3 = codeToSequence(seq1, directionsKeypad, false);
+    const seq3 = dirCodeToSequence(seq1, directionsKeypad, false);
     // console.log(seq3.join(''));
     sequences[code] = seq3.join('');
   }
