@@ -112,15 +112,11 @@ function getDirectionalMoveSequence(
 
 const seqMemo: Record<string, string[]> = {};
 
-function dirCodeToSequence(
+function solveSubsequence(
+  posOfKey: Record<string, [number, number]>,
   sequence: string[],
-  posOfKey: Record<string, [number, number]>
-): string[] {
-  // Try to find the entire sequence in memo first
-  const seqKey = `${sequence.join('')}`;
-  if (seqMemo[seqKey]) return seqMemo[seqKey];
-
-  let curr = 'A';
+  curr: string
+) {
   let newSequence: string[] = [];
   // Fall back to original logic if no matches found
   for (const char of sequence) {
@@ -131,8 +127,18 @@ function dirCodeToSequence(
     newSequence.push('A');
     curr = char;
   }
+  return newSequence;
+}
 
-  seqMemo[seqKey] = newSequence;
+function dirCodeToSequence(
+  sequence: string[],
+  posOfKey: Record<string, [number, number]>
+): string[] {
+  // Try to find the entire sequence in memo first
+  let curr = 'A';
+  // Try all cache hits from higher indices first
+  const newSequence = solveSubsequence(posOfKey, sequence, curr);
+
   return newSequence;
 }
 
