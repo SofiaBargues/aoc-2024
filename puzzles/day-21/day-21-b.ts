@@ -87,7 +87,7 @@ function getDirectionalMoveSequence(
   let seq: string[] = [];
 
   // If we're moving left and down, we need to go down first to avoid [0,0]
-  if (y < 0 && x > 0) {
+  if (y < 0 && x > 0 && pNew[1] === 0) {
     seq = seq.concat(new Array(x).fill('v'));
     seq = seq.concat(new Array(-y).fill('<'));
   }
@@ -99,11 +99,11 @@ function getDirectionalMoveSequence(
     if (x > 0) {
       seq = seq.concat(new Array(x).fill('v'));
     }
-    if (y > 0) {
-      seq = seq.concat(new Array(y).fill('>'));
-    }
     if (x < 0) {
       seq = seq.concat(new Array(-x).fill('^'));
+    }
+    if (y > 0) {
+      seq = seq.concat(new Array(y).fill('>'));
     }
   }
   dirMoveSeqMemo[`${pCurr[0]}-${pCurr[1]}-${pNew[0]}-${pNew[1]}`] = [...seq];
