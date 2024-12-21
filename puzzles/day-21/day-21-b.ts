@@ -106,40 +106,43 @@ function getDirectionalMoveSequence(
       seq = seq.concat(new Array(-x).fill('^'));
     }
   }
-  dirMoveSeqMemo[`${pCurr[0]}-${pCurr[1]}-${pNew[0]}-${pNew[1]}`] = seq;
+  dirMoveSeqMemo[`${pCurr[0]}-${pCurr[1]}-${pNew[0]}-${pNew[1]}`] = [...seq];
   return seq;
 }
 
-const seqMemo: Record<string, string[]> = {};
-
-function solveSubsequence(
-  posOfKey: Record<string, [number, number]>,
-  sequence: string[],
-  curr: string
-) {
-  let newSequence: string[] = [];
-  // Fall back to original logic if no matches found
-  for (const char of sequence) {
-    const pCurr = posOfKey[curr];
-    const pNew = posOfKey[char];
-    const mSeq = getDirectionalMoveSequence(pCurr, pNew);
-    newSequence = newSequence.concat(mSeq);
-    newSequence.push('A');
-    curr = char;
-  }
-  return newSequence;
+function dirMovement(curr: string, next: string) {
+  const pCurr = directionsKeypad[curr];
+  const pNext = directionsKeypad[next];
+  const mSeq = getDirectionalMoveSequence(pCurr, pNext);
+  mSeq.push('A');
+  return mSeq;
 }
 
-function dirCodeToSequence(
-  sequence: string[],
-  posOfKey: Record<string, [number, number]>
-): string[] {
-  // Try to find the entire sequence in memo first
-  let curr = 'A';
-  // Try all cache hits from higher indices first
-  const newSequence = solveSubsequence(posOfKey, sequence, curr);
+const dfsMemo: Record<string, number> = {};
 
-  return newSequence;
+function dfsDirMovement(curr: string, next: string, depth: number): number {
+  if (depth === 0) {
+    return 1;
+  }
+
+  if (dfsMemo[`${curr}-${next}-${depth}`]) {
+    return dfsMemo[`${curr}-${next}-${depth}`];
+  }
+
+  const mSeq = dirMovement(curr, next);
+
+  // console.log(depth, curr, next, mSeq);
+  let total = 0;
+  let prev = 'A';
+  for (let i = 0; i < mSeq.length; i++) {
+    // Should be [A, >], [>, A]
+    total += dfsDirMovement(prev, mSeq[i], depth - 1);
+    prev = mSeq[i];
+  }
+
+  dfsMemo[`${curr}-${next}-${depth}`] = total;
+
+  return total;
 }
 
 function numericCodeToSequence(
@@ -162,27 +165,26 @@ function numericCodeToSequence(
 
 export async function day21b(dataPath?: string) {
   const codes = await readLines(dataPath);
-  const sequences: Record<string, string> = {};
+  const sequencesLength: Record<string, number> = {};
   for (const code of codes) {
-    // console.log(code);
     let seq1 = numericCodeToSequence(code.split(''), numericKeypad);
-    // console.log(seq1.join(''));
-    for (let i = 0; i < 2; i++) {
-      console.log('step', i);
-      seq1 = dirCodeToSequence(seq1, directionsKeypad);
+    let count = 0;
+    let curr = 'A';
+    for (let i = 0; i < seq1.length; i++) {
+      // console.log('base', curr, seq1[i]);
+      count += dfsDirMovement(curr, seq1[i], 25);
+      curr = seq1[i];
     }
-    // console.log(seq2.join(''));
-    // console.log(seq3.join(''));
-    sequences[code] = seq1.join('');
+    sequencesLength[code] = count;
   }
 
-  console.log(sequences);
+  // console.log(sequencesLength);
 
   let total = 0;
-  for (const [code, seq] of Object.entries(sequences)) {
+  for (const [code, length] of Object.entries(sequencesLength)) {
     const numCode = Number(code.slice(0, code.length - 1));
 
-    total += numCode * seq.length;
+    total += numCode * length;
   }
 
   return total;
