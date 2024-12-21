@@ -118,11 +118,11 @@ function dirMovement(curr: string, next: string) {
   return mSeq;
 }
 
-const dfsMemo: Record<string, number> = {};
+const dfsMemo: Record<string, bigint> = {};
 
-function dfsDirMovement(curr: string, next: string, depth: number): number {
+function dfsDirMovement(curr: string, next: string, depth: number): bigint {
   if (depth === 0) {
-    return 1;
+    return 1n;
   }
 
   if (dfsMemo[`${curr}-${next}-${depth}`]) {
@@ -131,17 +131,14 @@ function dfsDirMovement(curr: string, next: string, depth: number): number {
 
   const mSeq = dirMovement(curr, next);
 
-  // console.log(depth, curr, next, mSeq);
-  let total = 0;
+  let total = 0n;
   let prev = 'A';
   for (let i = 0; i < mSeq.length; i++) {
-    // Should be [A, >], [>, A]
     total += dfsDirMovement(prev, mSeq[i], depth - 1);
     prev = mSeq[i];
   }
 
   dfsMemo[`${curr}-${next}-${depth}`] = total;
-
   return total;
 }
 
@@ -165,25 +162,21 @@ function numericCodeToSequence(
 
 export async function day21b(dataPath?: string) {
   const codes = await readLines(dataPath);
-  const sequencesLength: Record<string, number> = {};
+  const sequencesLength: Record<string, bigint> = {};
   for (const code of codes) {
     let seq1 = numericCodeToSequence(code.split(''), numericKeypad);
-    let count = 0;
+    let count = 0n;
     let curr = 'A';
     for (let i = 0; i < seq1.length; i++) {
-      // console.log('base', curr, seq1[i]);
       count += dfsDirMovement(curr, seq1[i], 25);
       curr = seq1[i];
     }
     sequencesLength[code] = count;
   }
 
-  // console.log(sequencesLength);
-
-  let total = 0;
+  let total = 0n;
   for (const [code, length] of Object.entries(sequencesLength)) {
-    const numCode = Number(code.slice(0, code.length - 1));
-
+    const numCode = BigInt(code.slice(0, code.length - 1));
     total += numCode * length;
   }
 
@@ -191,4 +184,9 @@ export async function day21b(dataPath?: string) {
 }
 
 const answer = await day21b();
-console.log(chalk.bgGreen('Your Answer:'), chalk.green(answer));
+console.log(
+  chalk.bgGreen('Your Answer:'),
+  chalk.green(answer.toLocaleString('fullwide', { useGrouping: false }))
+);
+
+// 14514101553408566412863078400
