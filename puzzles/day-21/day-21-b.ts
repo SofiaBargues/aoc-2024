@@ -110,22 +110,29 @@ function getDirectionalMoveSequence(
   return seq;
 }
 
+const seqMemo: Record<string, string[]> = {};
+
 function dirCodeToSequence(
   sequence: string[],
   posOfKey: Record<string, [number, number]>
 ): string[] {
+  // Try to find the entire sequence in memo first
+  const seqKey = `${sequence.join('')}`;
+  if (seqMemo[seqKey]) return seqMemo[seqKey];
+
   let curr = 'A';
   let newSequence: string[] = [];
+  // Fall back to original logic if no matches found
   for (const char of sequence) {
     const pCurr = posOfKey[curr];
     const pNew = posOfKey[char];
     const mSeq = getDirectionalMoveSequence(pCurr, pNew);
-    // console.log(char, movement, mSeq);
     newSequence = newSequence.concat(mSeq);
     newSequence.push('A');
     curr = char;
   }
 
+  seqMemo[seqKey] = newSequence;
   return newSequence;
 }
 
@@ -139,7 +146,6 @@ function numericCodeToSequence(
     const pCurr = posOfKey[curr];
     const pNew = posOfKey[char];
     const mSeq = getNumericMoveSequence(pCurr, pNew);
-    // console.log(char, movement, mSeq);
     newSequence = newSequence.concat(mSeq);
     newSequence.push('A');
     curr = char;
@@ -155,14 +161,13 @@ export async function day21b(dataPath?: string) {
     // console.log(code);
     let seq1 = numericCodeToSequence(code.split(''), numericKeypad);
     // console.log(seq1.join(''));
-    for (let i = 0; i < 25; i++) {
+    for (let i = 0; i < 2; i++) {
       console.log('step', i);
-      seq1 = dirCodeToSequence(seq1, directionsKeypad, false);
+      seq1 = dirCodeToSequence(seq1, directionsKeypad);
     }
     // console.log(seq2.join(''));
-    const seq3 = dirCodeToSequence(seq1, directionsKeypad, false);
     // console.log(seq3.join(''));
-    sequences[code] = seq3.join('');
+    sequences[code] = seq1.join('');
   }
 
   console.log(sequences);
