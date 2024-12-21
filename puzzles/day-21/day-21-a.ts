@@ -23,34 +23,99 @@ const directionsKeypad: Record<string, [number, number]> = {
   '>': [1, 2],
 };
 
-function movementToSequence(x: number, y: number) {
+function getNumericMoveSequence(
+  pStart: [number, number],
+  pEnd: [number, number]
+) {
+  /*
+  ------ y ----->
+| +---+---+---+
+| | 7 | 8 | 9 |
+| +---+---+---+
+x | 4 | 5 | 6 |
+| +---+---+---+
+| | 1 | 2 | 3 |
+| +---+---+---+
+|     | 0 | A |
+v      +---+---+
+  */
+
+  const movement = [pEnd[0] - pStart[0], pEnd[1] - pStart[1]];
+  const [x, y] = movement;
   let seq: string[] = [];
-  if (y < 0) {
+
+  // avoid [3,0]: If we're moving left and up starting from x=3 ending on y=0, we need to go up first and them left
+  if (y < 0 && x < 0 && pStart[0] === 3 && pEnd[1] === 0) {
+    seq = seq.concat(new Array(-x).fill('^'));
     seq = seq.concat(new Array(-y).fill('<'));
   }
-  if (x > 0) {
+  // avoid [3,0]: If we're moving right and down starting from y=0 ending on x=3, we need to go right first and them down
+  else if (y > 0 && x > 0 && pStart[1] === 0 && pEnd[0] === 3) {
+    seq = seq.concat(new Array(y).fill('>'));
     seq = seq.concat(new Array(x).fill('v'));
   }
-  if (y > 0) {
-    seq = seq.concat(new Array(y).fill('>'));
+  // For other cases, keep original priority order
+  else {
+    if (y < 0) {
+      seq = seq.concat(new Array(-y).fill('<'));
+    }
+    if (x > 0) {
+      seq = seq.concat(new Array(x).fill('v'));
+    }
+    if (y > 0) {
+      seq = seq.concat(new Array(y).fill('>'));
+    }
+    if (x < 0) {
+      seq = seq.concat(new Array(-x).fill('^'));
+    }
   }
-  if (x < 0) {
-    seq = seq.concat(new Array(-x).fill('^'));
+  return seq;
+}
+
+function getDirectionalMoveSequence(
+  pCurr: [number, number],
+  pNew: [number, number]
+) {
+  const movement = [pNew[0] - pCurr[0], pNew[1] - pCurr[1]];
+  const [x, y] = movement;
+  let seq: string[] = [];
+
+  // If we're moving left and down, we need to go down first to avoid [0,0]
+  if (y < 0 && x > 0) {
+    seq = seq.concat(new Array(x).fill('v'));
+    seq = seq.concat(new Array(-y).fill('<'));
+  }
+  // For other cases, keep original priority order
+  else {
+    if (y < 0) {
+      seq = seq.concat(new Array(-y).fill('<'));
+    }
+    if (x > 0) {
+      seq = seq.concat(new Array(x).fill('v'));
+    }
+    if (y > 0) {
+      seq = seq.concat(new Array(y).fill('>'));
+    }
+    if (x < 0) {
+      seq = seq.concat(new Array(-x).fill('^'));
+    }
   }
   return seq;
 }
 
 function codeToSequence(
   sequence: string[],
-  posOfKey: Record<string, [number, number]>
+  posOfKey: Record<string, [number, number]>,
+  isNumeric: boolean
 ): string[] {
   let curr = 'A';
   let newSequence: string[] = [];
   for (const char of sequence) {
     const pCurr = posOfKey[curr];
     const pNew = posOfKey[char];
-    const movement = [pNew[0] - pCurr[0], pNew[1] - pCurr[1]];
-    const mSeq = movementToSequence(movement[0], movement[1]);
+    const mSeq = isNumeric
+      ? getNumericMoveSequence(pCurr, pNew)
+      : getDirectionalMoveSequence(pCurr, pNew);
     // console.log(char, movement, mSeq);
     newSequence = newSequence.concat(mSeq);
     newSequence.push('A');
@@ -65,11 +130,11 @@ export async function day21a(dataPath?: string) {
   const sequences: Record<string, string> = {};
   for (const code of codes) {
     // console.log(code);
-    const seq1 = codeToSequence(code.split(''), numericKeypad);
+    const seq1 = codeToSequence(code.split(''), numericKeypad, true);
     // console.log(seq1.join(''));
-    const seq2 = codeToSequence(seq1, directionsKeypad);
+    const seq2 = codeToSequence(seq1, directionsKeypad, false);
     // console.log(seq2.join(''));
-    const seq3 = codeToSequence(seq2, directionsKeypad);
+    const seq3 = codeToSequence(seq2, directionsKeypad, false);
     // console.log(seq3.join(''));
     sequences[code] = seq3.join('');
   }
