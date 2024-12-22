@@ -2,14 +2,14 @@ import chalk from 'chalk';
 import { readLines } from '../../shared.ts';
 import { parseLines } from './parse.ts';
 
-function runProgram(A: number, B: number, C: number, program: number[]) {
-  const literal = (op: number) => op;
+function runProgram(A: bigint, B: bigint, C: bigint, program: number[]) {
+  const literal = (op: number) => BigInt(op);
 
   const comboOps = {
-    0: (op: number) => op,
-    1: (op: number) => op,
-    2: (op: number) => op,
-    3: (op: number) => op,
+    0: (op: number) => BigInt(op),
+    1: (op: number) => BigInt(op),
+    2: (op: number) => BigInt(op),
+    3: (op: number) => BigInt(op),
     4: (op: number) => A,
     5: (op: number) => B,
     6: (op: number) => C,
@@ -22,11 +22,10 @@ function runProgram(A: number, B: number, C: number, program: number[]) {
 
   let programIdx = 0;
   const output: number[] = [];
-  let earlyExit = false;
 
   const instructions = {
     0: (op: number) => {
-      A = Math.floor(A / 2 ** combo(op));
+      A = A >> BigInt(combo(op));
       programIdx += 2;
     },
     1: (op: number) => {
@@ -34,33 +33,30 @@ function runProgram(A: number, B: number, C: number, program: number[]) {
       programIdx += 2;
     },
     2: (op: number) => {
-      B = combo(op) % 8;
+      B = combo(op) % 8n;
       programIdx += 2;
     },
     3: (op: number) => {
-      if (A === 0) {
+      if (A === 0n) {
         programIdx += 2;
         return;
       }
-      programIdx = literal(op);
+      programIdx = Number(literal(op));
     },
     4: (op: number) => {
       B = B ^ C;
       programIdx += 2;
     },
     5: (op: number) => {
-      output.push(combo(op) % 8);
-      if (program[output.length - 1] !== output[output.length - 1]) {
-        earlyExit = true;
-      }
+      output.push(Number(combo(op) % 8n));
       programIdx += 2;
     },
     6: (op: number) => {
-      B = Math.floor(A / 2 ** combo(op));
+      B = A >> BigInt(combo(op));
       programIdx += 2;
     },
     7: (op: number) => {
-      C = Math.floor(A / 2 ** combo(op));
+      C = A >> BigInt(combo(op));
       programIdx += 2;
     },
   };
@@ -71,46 +67,66 @@ function runProgram(A: number, B: number, C: number, program: number[]) {
 
   while (programIdx < program.length) {
     runInstruction(program[programIdx], program[programIdx + 1]);
-    if (earlyExit) {
-      return [];
-    }
   }
 
   return output;
 }
 
-function processRange(
-  start: number,
-  end: number,
-  B: number,
-  C: number,
-  program: string
-) {
-  const programArray = program.split(',').map(Number);
-  console.log('processing range', start, end);
-  const range = end - start;
-  const rangePercent = Math.floor(range / 100);
-  for (let A = start; A < end; A++) {
-    if (A % rangePercent === 0 && A !== start) {
-      console.log(`${A} is ${Math.floor((A - start) / rangePercent)}% done`);
-    }
-    const output = runProgram(A, B, C, programArray);
-    if (output.join(',') === program) {
-      return A;
-    }
-  }
-  return -1;
-}
-
 export async function day17b(dataPath?: string) {
   const data = await readLines(dataPath);
   const { B, C, program } = parseLines(data);
-  const programStr = program.join(',');
-  const A_RANGE = 10000000000;
 
-  console.log('Processing range 0 to', A_RANGE);
-  const result = processRange(0, A_RANGE, B, C, programStr);
-  return result;
+  function dfs(pos: number, currentBits: bigint): bigint | null {
+    // Base case: we've found all digits
+    if (pos === 16) {
+      return currentBits;
+    }
+
+    // Try all 8 possibilities for the current position
+    for (let bits = 0n; bits < 8n; bits++) {
+      const testValue = bits | currentBits;
+      const output = runProgram(testValue, 0n, 0n, program);
+
+      // Get the target sequence from right to left
+      const targetSeq = program.slice(program.length - 1 - pos, program.length);
+      const outputSeq = output.slice(output.length - 1 - pos, output.length);
+
+      console.log(
+        `\nLevel ${pos}, Testing ${testValue.toString(2).padStart(30, '0')}`
+      );
+      console.log(`Current bits: ${bits.toString(2).padStart(3, '0')}`);
+      console.log(`Output seq: ${outputSeq.join(',')}`);
+      console.log(`Target seq: ${targetSeq.join(',')}`);
+
+      if (
+        outputSeq.length === targetSeq.length &&
+        outputSeq.every((v, i) => v === targetSeq[i])
+      ) {
+        console.log(`Found match for position ${pos}!`);
+        console.log(`----------------------------------`);
+
+        // Try next level with these bits
+        const nextResult = dfs(pos + 1, testValue << 3n);
+        if (nextResult !== null) {
+          return nextResult; // Found a complete solution
+        }
+
+        console.log(`Backtracking from level ${pos}, trying next possibility`);
+      }
+    }
+
+    return null; // No solution found at this level
+  }
+
+  const result = dfs(0, 0n);
+  if (result === null) {
+    console.log('No solution found');
+    return -1;
+  }
+
+  console.log('Testing result');
+  console.log(runProgram(result >> 3n, 0n, 0n, program));
+  return Number(result >> 3n);
 }
 
 // Main execution
