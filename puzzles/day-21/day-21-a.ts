@@ -23,6 +23,11 @@ const directionsKeypad: Record<string, [number, number]> = {
   '>': [1, 2],
 };
 
+const directionsKeypadGrid = [
+  [null, '^', 'A'],
+  ['<', 'v', '>'],
+];
+
 function getNumericMoveSequence(
   pStart: [number, number],
   pEnd: [number, number]
@@ -72,18 +77,31 @@ v      +---+---+
   return seq;
 }
 
+const dirMoveSeqMemo: Record<string, string[]> = {};
+
 function getDirectionalMoveSequence(
   pCurr: [number, number],
   pNew: [number, number]
 ) {
+  const vCurr = directionsKeypadGrid[pCurr[0]][pCurr[1]];
+  const vNew = directionsKeypadGrid[pNew[0]][pNew[1]];
+
+  if (dirMoveSeqMemo[`${vCurr}-${vNew}`]) {
+    return dirMoveSeqMemo[`${vCurr}-${vNew}`];
+  }
   const movement = [pNew[0] - pCurr[0], pNew[1] - pCurr[1]];
   const [x, y] = movement;
   let seq: string[] = [];
 
   // If we're moving left and down, we need to go down first to avoid [0,0]
-  if (y < 0 && x > 0) {
+  if (y < 0 && x > 0 && pNew[1] === 0) {
     seq = seq.concat(new Array(x).fill('v'));
     seq = seq.concat(new Array(-y).fill('<'));
+  }
+  // If we're moving right and up, we need to go right first to avoid [0,0]
+  else if (y > 0 && x < 0 && pCurr[1] === 0) {
+    seq = seq.concat(new Array(y).fill('>'));
+    seq = seq.concat(new Array(-x).fill('^'));
   }
   // For other cases, keep original priority order
   else {
@@ -100,6 +118,8 @@ function getDirectionalMoveSequence(
       seq = seq.concat(new Array(-x).fill('^'));
     }
   }
+  dirMoveSeqMemo[`${vCurr}-${vNew}`] = [...seq];
+
   return seq;
 }
 
@@ -129,13 +149,10 @@ export async function day21a(dataPath?: string) {
   const codes = await readLines(dataPath);
   const sequences: Record<string, string> = {};
   for (const code of codes) {
-    // console.log(code);
+    console.log(code);
     const seq1 = codeToSequence(code.split(''), numericKeypad, true);
-    // console.log(seq1.join(''));
     const seq2 = codeToSequence(seq1, directionsKeypad, false);
-    // console.log(seq2.join(''));
     const seq3 = codeToSequence(seq2, directionsKeypad, false);
-    // console.log(seq3.join(''));
     sequences[code] = seq3.join('');
   }
 
