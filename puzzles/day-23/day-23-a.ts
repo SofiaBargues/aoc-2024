@@ -41,26 +41,26 @@ export async function day23a(dataPath?: string) {
   for (const [node, neighbors] of Object.entries(edgesMap)) {
     console.log(node, neighbors);
     for (const nei of neighbors.keys()) {
-      console.log('node', node, 'nei', nei);
+      // console.log('node', node, 'nei', nei);
       neighbors.delete(nei);
 
       const otherNeighbors = edgesMap[nei];
       otherNeighbors.delete(node);
 
       const matches = neighbors.intersection(otherNeighbors);
-      console.log('matches', matches);
+      // console.log('matches', matches);
       for (const match of matches.keys()) {
         trios.push([node, nei, match]);
 
         const matchNei = edgesMap[match];
-        matchNei.delete(node);
-        matchNei.delete(nei);
+        // matchNei.delete(node);
+        // matchNei.delete(nei);
       }
     }
   }
   console.log(trios);
 
-  return trios.length;
+  return trios.filter((trio) => trio.some((node) => node[0] === 't')).length;
 }
 
 const answer = await day23a();
