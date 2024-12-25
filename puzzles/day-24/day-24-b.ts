@@ -1,6 +1,6 @@
 import chalk from 'chalk';
-import { readLines } from '../../shared.ts';
-import { parseLines } from './parse.ts';
+import { readLines } from '../../shared';
+import { parseLines } from './parse';
 
 function solve(in1Val: number, in2Val: number, gate: string): number {
   if (gate === 'OR') {
@@ -13,80 +13,52 @@ function solve(in1Val: number, in2Val: number, gate: string): number {
   throw Error('Invalid op');
 }
 
+// For the graph, outs are ins and ins are outs (reverse graph)
+function buildReverseGraph(
+  gates: { in1: string; in2: string; gate: string; outWire: string }[]
+): Record<string, string[]> {
+  const graph: Record<string, string[]> = {};
+  for (const gateDef of gates) {
+    graph[gateDef.outWire] = [gateDef.in1, gateDef.in2];
+  }
+  return graph;
+}
+
+function getDescendants(graph: Record<string, string[]>, node: string) {
+  const leaves = new Set<string>();
+
+  function traverse(currentNode: string) {
+    if (!graph[currentNode] || graph[currentNode].length === 0) {
+      leaves.add(currentNode);
+      return;
+    }
+
+    for (const child of graph[currentNode]) {
+      traverse(child);
+    }
+  }
+
+  traverse(node);
+  return Array.from(leaves);
+}
+
 export async function day24b(dataPath?: string) {
   const data = await readLines(dataPath);
-  const { gates: gatesDef, wires } = parseLines(data);
+  const { gates: gatesDef, wires: wiresInitialVals } = parseLines(data);
 
-  let gates = gatesDef;
-  const solved = wires;
-  // solve circuit
-  while (gates.length > 0) {
-    const newGates = [];
-    for (const gateDef of gates) {
-      const { in1, in2, gate, outWire } = gateDef;
-      if (in1 in solved && in2 in solved) {
-        const outVal = solve(solved[in1], solved[in2], gate);
-        solved[outWire] = outVal;
-      } else {
-        newGates.push(gateDef);
-      }import chalk from 'chalk';
-      import { readLines } from '../../shared.ts';
-      import { parseLines } from './parse.ts';
-      
-      function solve(in1Val: number, in2Val: number, gate: string): number {
-        if (gate === 'OR') {
-          return in1Val || in2Val;
-        } else if (gate === 'AND') {
-          return in1Val && in2Val;
-        } else if (gate === 'XOR') {
-          return in1Val !== in2Val ? 1 : 0;
-        }
-        throw Error('Invalid op');
-      }
-      
-      export async function day24a(dataPath?: string) {
-        const data = await readLines(dataPath);
-        const { gates: gatesDef, wires } = parseLines(data);
-      
-        let gates = gatesDef;
-        const solved = wires;
-        // solve circuit
-        while (gates.length > 0) {
-          const newGates = [];
-          for (const gateDef of gates) {
-            const { in1, in2, gate, outWire } = gateDef;
-            if (in1 in solved && in2 in solved) {
-              const outVal = solve(solved[in1], solved[in2], gate);
-              solved[outWire] = outVal;
-            } else {
-              newGates.push(gateDef);
-            }
-          }
-          gates = newGates;
-        }
-        // get number
-        const zSolved = Object.entries(solved).filter((pair) => pair[0][0] === 'z');
-        const binary = zSolved
-          .sort()
-          .map((pair) => String(pair[1]))
-          .reverse()
-          .join('');
-        return parseInt(binary, 2);
-      }
-      
-      const answer = await day24a();
-      console.log(chalk.bgGreen('Your Answer:'), chalk.green(answer));
-      
-    gates = newGates;
-  }
-  // get number
-  const zSolved = Object.entries(solved).filter((pair) => pair[0][0] === 'z');
-  const binary = zSolved
-    .sort()
-    .map((pair) => String(pair[1]))
-    .reverse()
-    .join('');
-  return parseInt(binary, 2);
+  // Build a graph with the gatesdef
+
+  const graph = buildReverseGraph(gatesDef);
+  console.log(
+    Object.entries(graph).filter(
+      ([node, ins]) =>
+        ['x', 'y'].includes(ins[0][0]) || ['x', 'y'].includes(ins[1][0])
+    )
+  );
+  const leaves = getDescendants(graph, 'z00');
+  console.log(leaves);
+
+  return 0;
 }
 
 const answer = await day24b();
