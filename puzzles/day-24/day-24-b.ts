@@ -13,6 +13,32 @@ function solveGate(in1Val: number, in2Val: number, gate: string): number {
   throw Error('Invalid op');
 }
 
+function testSummationCircuit(
+  testGraph: { [x: string]: string[] },
+  leaveNodes: Set<string>,
+  bits: number
+) {
+  // Get some values for x and y to to validate different sums that are representable by the number of bits in the output
+  const testValuePairs = [];
+  const max = 2 ** bits;
+  for (let i = 0; i < max; i++) {
+    for (let j = 0; j < max; j++) {
+      testValuePairs.push([i, j]);
+    }
+  }
+
+  // TODO: This needs to be done with a max num of random samples after some bits
+
+  for (const [x, y] of testValuePairs) {
+    const isValid = isCircuitValid(testGraph, leaveNodes, x, y, bits);
+    if (!isValid) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 function isCircuitValid(
   graph: Record<string, string[]>,
   leaveNodes: Set<string>,
@@ -84,6 +110,29 @@ function buildReverseGraph(
   return graph;
 }
 
+function hasCycles(
+  graph: Record<string, string[]>,
+  leaveNodes: Set<string>,
+  node: string
+) {
+  const visited = new Set<string>();
+  const stack = [node];
+  while (stack.length > 0) {
+    const currentNode = stack.pop()!;
+    if (visited.has(currentNode)) {
+      return true;
+    }
+    if (leaveNodes.has(currentNode)) {
+      continue;
+    }
+    visited.add(currentNode);
+    const [in1, in2, gate] = graph[currentNode];
+    stack.push(in1);
+    stack.push(in2);
+  }
+  return false;
+}
+
 function getDescendants(graph: Record<string, string[]>, node: string) {
   const descendants = new Set<string>();
 
@@ -127,33 +176,62 @@ export async function day24b(dataPath?: string) {
   // Build graph (non-reverse)
   // To verify we need to traverse and solve
 
-  for (let descendant of nodesDescendants['z00'].filter(
-    (node) => !leaveNodes.has(node)
-  )) {
-    const testGraph = Object.entries(reverseGraph).map(([key, value]) => ({
-      key,
-      value: value.slice(0, 2),
-    }));
+  const valid1 = isCircuitValid(reverseGraph, leaveNodes, 0, 0, 1);
+  const valid2 = isCircuitValid(reverseGraph, leaveNodes, 0, 1, 1);
+  const valid3 = isCircuitValid(reverseGraph, leaveNodes, 1, 0, 1);
+  const valid4 = isCircuitValid(reverseGraph, leaveNodes, 1, 1, 1);
+  if (valid1 && valid2 && valid3 && valid4) {
+    // Should continue down this path if valid right away
+    console.log('Valid swap', 0, 0);
+  } else {
+    console.log('Invalid swap', 0, 0);
+  }
 
-    // for x00 = 0 and y00 = 0, z00 = 1
-    // for x00 = 1 and y00 = 1, z00 = 0
-    // for x00 = 0 and y00 = 1, z00 = 1
-    // for x00 = 1 and y00 = 0, z00 = 0
-    const valid1 = isCircuitValid(reverseGraph, leaveNodes, 0, 0, 1);
-    const valid2 = isCircuitValid(reverseGraph, leaveNodes, 0, 1, 1);
-    const valid3 = isCircuitValid(reverseGraph, leaveNodes, 1, 0, 1);
-    const valid4 = isCircuitValid(reverseGraph, leaveNodes, 1, 1, 1);
+  // Explore paths after swap if backtracking was needed
+  const validSwaps = [];
+  for (let descendant of nodesDescendants['z00']
+    .filter((node) => !leaveNodes.has(node))
+    .concat(['z00'])) {
+    const candidates = Object.entries(nodesDescendants)
+      .filter(([node, descendants]) =>
+        descendants.some(
+          (descendant) => descendant === 'x00' || descendant === 'y00'
+        )
+      )
+      .map(([node, _]) => node)
+      .filter((node) => !leaveNodes.has(node));
 
-    if (!valid1 || !valid2 || !valid3 || !valid4) {
-      console.log('Invalid', valid1, valid2, valid3, valid4);
-    } else {
-      console.log('Valid');
+    for (const candidate of candidates) {
+      // Create a copy of the graph for testing
+      const testGraph = { ...reverseGraph };
+
+      // Swap the nodes
+      const tempValue = testGraph[descendant];
+      testGraph[descendant] = testGraph[candidate];
+      testGraph[candidate] = tempValue;
+
+      if (candidate === descendant) {
+        continue;
+      }
+
+      // Verify that no cycle is created for swapped nodes
+      if (
+        hasCycles(testGraph, leaveNodes, descendant) ||
+        hasCycles(testGraph, leaveNodes, candidate)
+      ) {
+        continue;
+      }
+      // Test all input combinations
+      const bits = 1;
+      const isValid = testSummationCircuit(testGraph, leaveNodes, bits);
+      if (isValid) {
+        validSwaps.push({ descendant, candidate });
+      } else {
+        console.log('Invalid swap', descendant, candidate);
+      }
     }
   }
-  console.log(reverseGraph);
-  console.log(nodesDescendants['z00']);
-
-  console.log(nodesDescendants['z00'].filter((node) => !leaveNodes.has(node)));
+  console.log('Valid swaps:', validSwaps);
 
   return 0;
 }
